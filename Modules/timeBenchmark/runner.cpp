@@ -1,4 +1,4 @@
-#include "timeBenchmark.h"
+#include "timeBenchmark.hpp"
 #include <iostream>
 
 int main(int argc, char **argv)

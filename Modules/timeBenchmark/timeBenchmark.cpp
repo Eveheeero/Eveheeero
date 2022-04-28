@@ -1,15 +1,15 @@
-#include "timeBenchmark.h"
+#include "timeBenchmark.hpp"
 
 namespace tbmark
 {
     int tbmark(const char *path, bool print)
     {
-        clock_t duration = timing(path, print);
+        clock_t duration = timing_exec(path, print);
 
         return duration;
     }
 
-    unsigned long timing(const char *path, bool print)
+    unsigned long timing_exec(const char *path, bool print)
     {
         clock_t start = clock();
         run(path, print);

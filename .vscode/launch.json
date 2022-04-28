@@ -8,14 +8,14 @@
             "name": "g++ one",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}/a.out",
+            "program": "${fileDirname}/a",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerPath": "/usr/bin/gdb",
+            "miDebuggerPath": "gdb",
             "setupCommands": [
                 {
                     "description": "gdb에 자동 서식 지정 사용",
@@ -29,14 +29,14 @@
             "name": "g++ module",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}/a.out",
+            "program": "${fileDirname}/a",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerPath": "/usr/bin/gdb",
+            "miDebuggerPath": "gdb",
             "setupCommands": [
                 {
                     "description": "gdb에 자동 서식 지정 사용",

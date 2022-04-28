@@ -4,13 +4,11 @@
 		{
 			"type": "cppbuild",
 			"label": "g++",
-			"command": "/usr/bin/g++",
+			"command": "g++",
 			"args": [
 				"-fdiagnostics-color=always",
 				"-g",
-				"${file}",
-				"-o",
-				"${fileDirname}/a.out"
+				"${file}"
 			],
 			"options": {
 				"cwd": "${fileDirname}"
@@ -27,13 +25,11 @@
 		{
 			"type": "cppbuild",
 			"label": "g++ module",
-			"command": "/usr/bin/g++",
+			"command": "g++",
 			"args": [
 				"-fdiagnostics-color=always",
 				"-g",
-				"*.cpp",
-				"-o",
-				"${fileDirname}/a.out"
+				"*.cpp"
 			],
 			"options": {
 				"cwd": "${fileDirname}"
