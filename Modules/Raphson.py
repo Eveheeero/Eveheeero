@@ -104,7 +104,7 @@ class RaphsonClass:
                 solution[1] -= objects[1]
 
                 now_time = time.time() # 반복 완료 후, 제약사항 검사
-                if now_time - total_start > timeTotal or (
+                if now_time - total_start > timeTotal / 1000 or (
                         preparedStartValues is not None and prepared_start_value_offset == len(preparedStartValues)):
                     outer_break_flag = True
                     break
@@ -115,7 +115,7 @@ class RaphsonClass:
                     # 추가적으로 다른 제약사항이 들어갈 수 있다.
                 iterations += 1
                 if math.isnan(solution[0]) or math.isnan(
-                        solution[1]) or iterations > iterationsPerTry or now_time - start_per_try > timePerTry:
+                        solution[1]) or iterations > iterationsPerTry or now_time - start_per_try > timePerTry / 1000:
                     break
                     # 결과값이 오류가나거나 반복당 시간이 지나있을 시, 다음 주기를 돈다.
             if outer_break_flag:
