@@ -22,22 +22,26 @@ namespace tbmark
         return std::system(path);
     }
 
-    unsigned long Wrapper::timing_exec(int *func(void), int loopCount, clock_t duration)
-    {
+    unsigned long Wrapper::timing_exec(int loopCount, clock_t duration)
+    {   // 프로그램 한번 실행시간을 반환함
         clock_t start = clock();
-        run(func);
+        run();
         clock_t end = clock();
         return end - start;
     }
-    int Wrapper::tbmark(int *func(void), int loopCount, clock_t totalTime)
+    int Wrapper::tbmark(int loopCount, clock_t totalTime)
     {
-        clock_t duration = timing_exec(func, loopCount, totalTime);
-
+        clock_t duration = timing_exec(loopCount, totalTime);
+        // 시간이 짧을경우 여러번 반복한다
         return duration;
     }
 
-    int Wrapper::run(int *func(void))
-    {
-        return *func();
+    int Wrapper::run()
+    {   // 프로그램을 실행시킴
+        return (this->*func)();
+    }
+    Wrapper::Wrapper(functype func_)
+        : func(func_)
+    {   // 객체 초기화
     }
 }

@@ -10,11 +10,15 @@ namespace tbmark
     int run(const char *path, bool print = false);
     class Wrapper
     {
+        typedef int (Wrapper::*functype)(void);
+
     private:
-        unsigned long timing_exec(int *func(void), int loopCount, clock_t duration);
+        functype func;
+        unsigned long timing_exec(int loopCount, clock_t duration);
 
     public:
-        int tbmark(int *func(void), int loopCount = NULL, clock_t totalTime = NULL);
-        int run(int *func(void));
+        int tbmark(int loopCount = NULL, clock_t totalTime = NULL);
+        int run();
+        Wrapper(functype func_);
     };
 }
