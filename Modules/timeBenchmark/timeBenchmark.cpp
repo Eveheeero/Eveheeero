@@ -21,4 +21,23 @@ namespace tbmark
     {
         return std::system(path);
     }
+
+    unsigned long Wrapper::timing_exec(int *func(void), int loopCount, clock_t duration)
+    {
+        clock_t start = clock();
+        run(func);
+        clock_t end = clock();
+        return end - start;
+    }
+    int Wrapper::tbmark(int *func(void), int loopCount, clock_t totalTime)
+    {
+        clock_t duration = timing_exec(func, loopCount, totalTime);
+
+        return duration;
+    }
+
+    int Wrapper::run(int *func(void))
+    {
+        return *func();
+    }
 }
