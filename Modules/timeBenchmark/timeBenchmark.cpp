@@ -23,7 +23,7 @@ namespace tbmark
     }
 
     unsigned long Wrapper::timing_exec(int loopCount, clock_t duration)
-    {   // 프로그램 한번 실행시간을 반환함
+    { // 프로그램 한번 실행시간을 반환함
         clock_t start = clock();
         run();
         clock_t end = clock();
@@ -37,11 +37,11 @@ namespace tbmark
     }
 
     int Wrapper::run()
-    {   // 프로그램을 실행시킴
+    { // 프로그램을 실행시킴
         return (this->*func)();
     }
     Wrapper::Wrapper(functype func_)
         : func(func_)
-    {   // 객체 초기화
+    { // 객체 초기화
     }
 }
