@@ -14,7 +14,7 @@ namespace tbmark
 
     private:
         functype func;
-        unsigned long timing_exec(int loopCount, clock_t duration);
+        unsigned long timing_exec(void);
 
     public:
         int tbmark(int loopCount = NULL, clock_t totalTime = NULL);

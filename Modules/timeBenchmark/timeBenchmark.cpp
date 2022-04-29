@@ -22,7 +22,7 @@ namespace tbmark
         return std::system(path);
     }
 
-    unsigned long Wrapper::timing_exec(int loopCount, clock_t duration)
+    unsigned long Wrapper::timing_exec(void)
     { // 프로그램 한번 실행시간을 반환함
         clock_t start = clock();
         run();

@@ -1,23 +1,14 @@
 #include "math.hpp"
 
+template float math::pow<float>(float, float);
+
 namespace math
 {
-    template <typename T>
-    T abs(T x)
-    {
-        union
-        {
-            T value;
-            bool flag;
-        } type;
-        type.value = x;
-        type.flag = false;
-        return type.value;
-    }
 
     template <typename T, typename E>
     T pow(T x, E y)
     {
+        return x * y;   // 미작성, for문이나 while문으로 하는것 외에도 bit로 하는것
     }
 
     template <typename T>
