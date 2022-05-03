@@ -1,12 +1,13 @@
 #pragma once
 
 #include <cstdlib>
-#include <time.h>
+#include <chrono>
+#include <cmath>
 
 namespace tbmark
 {
-    int tbmark(const char *path, bool print = false);
-    unsigned long timing_exec(const char *path, bool print = false);
+    unsigned long long tbmark(const char *path, bool print = false);
+    std::chrono::nanoseconds timing_exec(const char *path, bool print = false);
     int run(const char *path, bool print = false);
     class Wrapper
     {
@@ -14,10 +15,10 @@ namespace tbmark
 
     private:
         functype func;
-        unsigned long timing_exec(void);
+        std::chrono::nanoseconds timing_exec(void);
 
     public:
-        int tbmark(int loopCount = NULL, clock_t totalTime = NULL);
+        unsigned long long tbmark(int loopCount = 1, unsigned long long totalTime = 1'000'000'000);
         int run();
         Wrapper(functype func_);
     };

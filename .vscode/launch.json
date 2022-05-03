@@ -16,6 +16,9 @@
             "externalConsole": false,
             "MIMode": "gdb",
             "miDebuggerPath": "gdb",
+            "linux": {
+                "program": "${fileDirname}/a.out"
+            },
             "setupCommands": [
                 {
                     "description": "gdb에 자동 서식 지정 사용",
@@ -37,6 +40,9 @@
             "externalConsole": false,
             "MIMode": "gdb",
             "miDebuggerPath": "gdb",
+            "linux":{
+                "program": "${fileDirname}/a.out"
+            },
             "setupCommands": [
                 {
                     "description": "gdb에 자동 서식 지정 사용",

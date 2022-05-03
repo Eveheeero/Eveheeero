@@ -2,18 +2,18 @@
 
 namespace tbmark
 {
-    int tbmark(const char *path, bool print)
+    unsigned long long tbmark(const char *path, bool print)
     {
-        clock_t duration = timing_exec(path, print);
+        std::chrono::nanoseconds duration = timing_exec(path, print);
 
-        return duration;
+        return duration.count();
     }
 
-    unsigned long timing_exec(const char *path, bool print)
+    std::chrono::nanoseconds timing_exec(const char *path, bool print)
     {
-        clock_t start = clock();
+        std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
         run(path, print);
-        clock_t end = clock();
+        std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
         return end - start;
     }
 
@@ -22,18 +22,32 @@ namespace tbmark
         return std::system(path);
     }
 
-    unsigned long Wrapper::timing_exec(void)
+    std::chrono::nanoseconds Wrapper::timing_exec(void)
     { // 프로그램 한번 실행시간을 반환함
-        clock_t start = clock();
+        std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
         run();
-        clock_t end = clock();
+        std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
         return end - start;
     }
-    int Wrapper::tbmark(int loopCount, clock_t totalTime)
+    unsigned long long Wrapper::tbmark(int loopCount, unsigned long long totalTime)
     {
-        clock_t duration = timing_exec(loopCount, totalTime);
+        std::chrono::nanoseconds duration = timing_exec();
         // 시간이 짧을경우 여러번 반복한다
-        return duration;
+        if (duration.count() / 1000'000'000 < 1)
+            return duration.count();
+        else
+        {
+            int count = 9 - log10(duration.count());
+            std::chrono::nanoseconds highest = duration;
+            int now = 0;
+            while (now < count)
+            {
+                std::chrono::nanoseconds value = timing_exec();
+                if (highest < value)
+                    highest = value;
+            }
+            return highest.count();
+        }
     }
 
     int Wrapper::run()
