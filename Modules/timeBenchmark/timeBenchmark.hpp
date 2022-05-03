@@ -7,7 +7,7 @@
 namespace tbmark
 {
     unsigned long long tbmark(const char *path, bool print = false);
-    std::chrono::nanoseconds timing_exec(const char *path, bool print = false);
+    unsigned long long timing_exec(const char *path, bool print = false);
     int run(const char *path, bool print = false);
     class Wrapper
     {
@@ -15,7 +15,7 @@ namespace tbmark
 
     private:
         functype func;
-        std::chrono::nanoseconds timing_exec(void);
+        unsigned long long timing_exec(void);
 
     public:
         unsigned long long tbmark(int loopCount = 1, unsigned long long totalTime = 1'000'000'000);

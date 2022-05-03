@@ -9,7 +9,7 @@ namespace tbmark
         return duration.count();
     }
 
-    std::chrono::nanoseconds timing_exec(const char *path, bool print)
+    unsigned long long timing_exec(const char *path, bool print)
     {
         std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
         run(path, print);
@@ -22,7 +22,7 @@ namespace tbmark
         return std::system(path);
     }
 
-    std::chrono::nanoseconds Wrapper::timing_exec(void)
+    unsigned long long Wrapper::timing_exec(void)
     { // 프로그램 한번 실행시간을 반환함
         std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
         run();
