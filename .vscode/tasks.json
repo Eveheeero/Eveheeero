@@ -7,6 +7,7 @@
 			"command": "g++",
 			"args": [
 				"-fdiagnostics-color=always",
+				"-m64",
 				"-g",
 				"${file}"
 			],
@@ -28,6 +29,7 @@
 			"command": "g++",
 			"args": [
 				"-fdiagnostics-color=always",
+				"-m64",
 				"-g",
 				"*.cpp"
 			],

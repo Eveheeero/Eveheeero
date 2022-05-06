@@ -52,7 +52,5 @@
             ],
             "preLaunchTask": "g++ module"
         }
-        
-
     ]
 }
