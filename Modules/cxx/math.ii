@@ -64,5 +64,5 @@ template<typename T>
 T
 signbit(T x);
 
-} // namespace math
-} // namespace evh
+}
+}
