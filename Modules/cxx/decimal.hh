@@ -2,7 +2,9 @@
 
 #define TODO
 
+#include "byte_len.ii"
 #include <cstdint>
+#include <cstdio>
 #include <string>
 // uint32 - 정확히 32비트
 // uint32_fast - 32비트 이상, 가장 빠른것
@@ -23,9 +25,15 @@ enum Signal : uint_fast8_t
 };
 }
 
+/**
+ * @brief 큰 자료형 숫자를 저장하는 클래스
+ * @note 32비트 정수형은 2_147_483_647까지 저장할 수 있는것을 기반으로, 한 글자 당 9자리를 저장해 사용한다.
+ */
 class Decimal
 {
 private:
+  static inline size_t byte_len(const char* str) noexcept { return byte_len_asm(str); }
+
 protected:
   /// @brief 숫자의 부호
   Signal    signal;
@@ -43,7 +51,27 @@ public:
     this->data        = nullptr;
   }
 
-  Decimal(const char* str) noexcept { TODO }
+  Decimal(const char* str) noexcept
+  {
+    if (str == nullptr || str[0] == '\0') {
+      /* 데이터가 0일때 */
+      // 포인터가 비어있거나, 배열이 비어있으면 빈 데이터로 처리한다.
+
+      this->signal      = Signal::zero;
+      this->data_length = 0;
+      this->data        = nullptr;
+    } else if (str[0] == '-') {
+      /* 데이터가 음수일때 */
+      // 첫 글자가 -일경우 음수로 처리한다.
+
+    } else {
+      /* 데이터가 양수일때 */
+      // 그 외는 양수로 처리한다.
+
+      this->signal = Signal::positive;
+      auto len     = this->byte_len(str);
+    }
+  }
 
   /// @brief 데이터 복사
   /// @param other 다른 Decimal 객체
