@@ -1,0 +1,21 @@
+#pragma once
+
+#include <cstddef>
+
+namespace evh {
+
+inline size_t
+byte_len_asm(const char* str) noexcept
+{
+  size_t result;
+  asm volatile("xorb %%al, %%al;"
+               "movq %%rbx, %%rdi;"
+               "repne scasb;"
+               "subq %%rbx, %%rdi;"
+               "movq %%rdi, %0;"
+               : "=r"(result)
+               : "b"(str));
+  return result;
+}
+
+} // namespace evh

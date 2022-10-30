@@ -1,0 +1,37 @@
+BasedOnStyle: Mozilla
+IndentWidth: 2
+ColumnLimit: 140
+# 100?
+
+AlignAfterOpenBracket: Align
+AlignArrayOfStructures: Right
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveAssignments: AcrossEmptyLines
+AlignConsecutiveAssignments: AcrossComments
+
+AlignConsecutiveMacros: AcrossEmptyLines
+AlignConsecutiveMacros: AcrossComments
+# AlignConsecutiveMacros: AlignCompound
+
+AlignConsecutiveDeclarations: Consecutive
+AlignConsecutiveDeclarations: AcrossEmptyLines
+AlignConsecutiveDeclarations: AcrossComments
+# AlignConsecutiveDeclarations: PadOperators
+
+AlignEscapedNewlines: Right
+
+AlignOperands: AlignAfterOperator
+
+AlignTrailingComments: true
+
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+# AllowAllArgumentsOnNextLine: true
+# AllowAllParametersOfDeclarationOnNextLine: true
+# AllowShortBlocksOnASingleLine: Empty
+# AllowShortCaseLabelsOnASingleLine: false
+# AllowShortEnumsOnASingleLine: false
+# AllowShortFunctionsOnASingleLine: Inline
+# AllowShortIfStatementsOnASingleLine: Never
+# AllowShortLambdasOnASingleLine: Inline
+# AllowShortLoopsOnASingleLine: true
+# AlwaysBreakBeforeMultilineStrings: false
