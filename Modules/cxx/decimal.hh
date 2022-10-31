@@ -1,10 +1,12 @@
 #pragma once
 
-#define TODO
+#define TODO() static_assert(false, "TODO")
 
 #include "byte_len.ii"
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <string>
 // uint32 - 정확히 32비트
 // uint32_fast - 32비트 이상, 가장 빠른것
@@ -32,7 +34,22 @@ enum Signal : uint_fast8_t
 class Decimal
 {
 private:
-  static inline size_t byte_len(const char* str) noexcept { return byte_len_asm(str); }
+  static inline size_t        byte_len(const char* str) noexcept { return byte_len_asm(str); }
+  /// @brief 빠른 uint32 파싱
+  /// @param str 변환할 문자열
+  /// @return 파싱된 문자열
+  static inline uint_fast32_t atoui32(const char* str) noexcept
+  {
+    uint_fast32_t value = 0;
+    char          c;
+    while (*str) {
+      c = *str;
+      ++str;
+      value *= 10;
+      value += c & 0xf;
+    }
+    return value;
+  }
 
 protected:
   /// @brief 숫자의 부호
@@ -68,8 +85,33 @@ public:
       /* 데이터가 양수일때 */
       // 그 외는 양수로 처리한다.
 
-      this->signal = Signal::positive;
-      auto len     = this->byte_len(str);
+      // 양수 설정
+      this->signal      = Signal::positive;
+      // 입력 데이터의 글자수
+      auto len          = this->byte_len(str);
+      // data마다 9자릿수를 저장한다.
+      this->data_length = (len / 9) + 1;
+      // data 배열 할당
+      this->data        = new uint32_t[this->data_length];
+
+      // 버퍼 설정
+      char          buf[10]    = { 0 };
+      uint_fast32_t data_index = 0;
+      size_t        buf_index  = len - 9;
+      // 데이터 길이가 9자리씩 끊어서 저장
+      while (buf_index > 0) {
+        // 뒤에서부터 순차적으로 9자리씩 버퍼에 옮긴 후
+        strncpy(buf, str + buf_index, 9);
+        // 숫자형으로 파싱하여 저장
+        this->data[data_index] = this->atoui32(buf);
+        // 이후 인덱스 이동
+        buf_index -= 9;
+        data_index += 1;
+      }
+      // 남은 데이터 저장
+      strncpy(buf, str, buf_index + 9);
+      buf[buf_index + 9]     = '\0';
+      this->data[data_index] = this->atoui32(buf);
     }
   }
 
@@ -116,7 +158,7 @@ public:
       this->data[i] = other.data[i];
   }
 
-  inline void operator+(const uint32_t& data) noexcept { TODO }
+  inline Decimal operator+(const uint32_t& data) noexcept { TODO(); }
 
   inline const std::string to_string() const noexcept
   {
