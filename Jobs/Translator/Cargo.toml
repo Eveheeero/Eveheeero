@@ -1,0 +1,14 @@
+[package]
+name = "google_translator"
+version = "0.1.0"
+edition = "2021"
+authors = ["Eveheeero <xhve00000@gmail.com>"]
+license = "MIT"
+description = "Simple Custom Google Translator"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+reqwest = "0.11"
+json = "0.12.4"
+log = "0.4.17"
+simplelog = "0.12.0"
