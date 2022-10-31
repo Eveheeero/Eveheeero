@@ -15,7 +15,7 @@ byte_len_asm(const char* str) noexcept
                "movq %%rdi, %0;"
                : "=r"(result)
                : "b"(str));
-  return result;
+  return result - 1;
 }
 
 }

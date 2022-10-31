@@ -55,7 +55,7 @@ protected:
   /// @brief 숫자의 부호
   Signal    signal;
   /// @brief data 배열의 길이
-  uint64_t  data_length = 0;
+  uint32_t  data_length = 0;
   /// @brief 데이터가 들어있는 배열
   uint32_t* data        = nullptr;
 
@@ -97,7 +97,7 @@ public:
       // 버퍼 설정
       char          buf[10]    = { 0 };
       uint_fast32_t data_index = 0;
-      size_t        buf_index  = len - 9;
+      int_fast64_t  buf_index  = len - 9;
       // 데이터 길이가 9자리씩 끊어서 저장
       while (buf_index > 0) {
         // 뒤에서부터 순차적으로 9자리씩 버퍼에 옮긴 후
@@ -123,7 +123,7 @@ public:
     this->signal      = other.signal;
     this->data_length = other.data_length;
     this->data        = new uint32_t[this->data_length];
-    for (uint64_t i = 0; i < this->data_length; i++)
+    for (uint32_t i = 0; i < this->data_length; i++)
       this->data[i] = other.data[i];
   }
 
@@ -154,7 +154,7 @@ public:
     this->signal      = other.signal;
     this->data_length = other.data_length;
     this->data        = new uint32_t[this->data_length];
-    for (uint64_t i = 0; i < this->data_length; i++)
+    for (uint32_t i = 0; i < this->data_length; i++)
       this->data[i] = other.data[i];
   }
 
