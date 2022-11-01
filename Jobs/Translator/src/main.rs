@@ -1,25 +1,49 @@
-use std::io::Write;
-
+use clap::Parser;
 use log::debug;
+
+#[derive(Parser, Debug)]
+struct Args {
+    /// Input language
+    #[arg(short, long = "input", default_value_t = String::from("auto"))]
+    input_lang: String,
+
+    /// Output language
+    #[arg(short, long = "output", default_value_t = String::from("en"))]
+    output_lang: String,
+
+    /// Translator mode, 1 - one line, 2 - file, 3 - Interactive
+    #[arg(short = 'm', long = "mode", default_value_t = 1)]
+    mode: u8,
+
+    /// Args
+    #[arg(short = 'a', long = "args")]
+    args: Option<String>,
+}
 
 #[tokio::main]
 async fn main() {
     // 로거 설정
     // let _ = simplelog::SimpleLogger::init(log::LevelFilter::Debug, simplelog::Config::default());
 
-    print!("Input Text : ");
-    std::io::stdout().flush().unwrap();
-    let mut text = String::new();
-    std::io::stdin().read_line(&mut text).unwrap();
+    translate_one_line("Hello", "auto", "kr").await;
+
+    // 인자 파싱
+    let args = Args::parse();
 
     // 출발 언어와 도착 언어 지정
-    let start_lang = "auto";
-    print!("Output Language (Ex. ko) : ");
-    std::io::stdout().flush().unwrap();
-    let mut target_lang = String::new();
-    std::io::stdin().read_line(&mut target_lang).unwrap();
-    target_lang = target_lang.trim().to_owned();
+    let input_lang = args.input_lang;
+    let output_lang = args.output_lang;
 
+    match args.mode {
+        1 => todo!(),
+        2 => todo!(),
+        3 => todo!(),
+        _ => return,
+    }
+}
+
+async fn translate_one_line(text: &str, input_lang: &str, output_lang: &str) -> String {
+    // translate.google.com 발송 쿼리문 생성
     let query = {
         // 번역 쿼리문에는 줄바꿈이 \\n으로 들어가있다. 이에 맞추어 보내야한다.
         let text = text.replace("\r\n", "\\\\n").replace("\n", "\\\\n");
@@ -27,7 +51,7 @@ async fn main() {
         let query = format!(
             // 구글 내부 쿼리문 형태에 따른다
             r#"[[["MkEWBc","[[\"{}\",\"{}\",\"{}\",true],[null]]",null,"generic"]]]"#,
-            text, start_lang, target_lang
+            text, input_lang, output_lang
         );
         debug!("query: {}", query);
         query
@@ -66,10 +90,25 @@ async fn main() {
         text
     };
 
+    let query = {
+        // 번역 쿼리문에는 줄바꿈이 \\n으로 들어가있다. 이에 맞추어 보내야한다.
+        let text = text.replace("\r\n", "\\\\n").replace("\n", "\\\\n");
+        // 쿼리문 설정
+        let query = format!(
+            // 구글 내부 쿼리문 형태에 따른다
+            r#"[[["MkEWBc","[[\"{}\",\"{}\",\"{}\",true],[null]]",null,"generic"]]]"#,
+            text, input_lang, output_lang
+        );
+        debug!("query: {}", query);
+        query
+    };
+
     let content = json::parse(&text).unwrap();
     // 번역이 들어있는 Json의 위치 지정
     let iter = &content[1][0][0][5];
     for i in iter.members().step_by(2) {
         println!("{}", i[0]);
     }
+
+    "OK".to_string()
 }
