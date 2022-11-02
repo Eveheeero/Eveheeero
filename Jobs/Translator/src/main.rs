@@ -1,5 +1,12 @@
+use std::io::Write;
+
 use clap::Parser;
 use log::debug;
+
+#[cfg(windows)]
+const EOL: &str = "\r\n";
+#[cfg(not(windows))]
+const EOL: &str = "\n";
 
 #[derive(Parser, Debug)]
 struct Args {
@@ -18,15 +25,20 @@ struct Args {
     /// Args
     #[arg(short = 'a', long = "args")]
     args: Option<String>,
+
+    /// Output File
+    #[arg(short = 'f', long = "output file")]
+    output_file: Option<String>,
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 로거 설정
     // let _ = simplelog::SimpleLogger::init(log::LevelFilter::Debug, simplelog::Config::default());
 
     // 인자 파싱
     let args = Args::parse();
+    let output_file = args.output_file;
 
     // 출발 언어와 도착 언어 지정
     let input_lang = args.input_lang;
@@ -37,23 +49,27 @@ async fn main() {
         1 => match args.args {
             // 인자에 있는 값 번역
             Some(args) => {
-                println!(
-                    "{}",
-                    translate_one_line(&args, &input_lang, &output_lang)
-                        .await
-                        .unwrap()
-                );
+                // 번역 후 출력
+                print_one_line(
+                    &output_file,
+                    &format!(
+                        "{}",
+                        translate_one_line(&args, &input_lang, &output_lang).await?
+                    ),
+                )?;
             }
             // 입력값 번역
             None => {
                 let mut input = String::new();
-                std::io::stdin().read_line(&mut input).unwrap();
-                println!(
-                    "{}",
-                    translate_one_line(&input, &input_lang, &output_lang)
-                        .await
-                        .unwrap()
-                );
+                std::io::stdin().read_line(&mut input)?;
+                // 번역 후 출력
+                print_one_line(
+                    &output_file,
+                    &format!(
+                        "{}",
+                        translate_one_line(&input, &input_lang, &output_lang).await?
+                    ),
+                )?;
             }
         },
         // 파일 전체 번역
@@ -63,17 +79,20 @@ async fn main() {
             // 사용자가 종료할때까지 번역
             loop {
                 let mut input = String::new();
-                std::io::stdin().read_line(&mut input).unwrap();
-                println!(
-                    "{}",
-                    translate_one_line(&input, &input_lang, &output_lang)
-                        .await
-                        .unwrap()
-                );
+                std::io::stdin().read_line(&mut input)?;
+                // 번역 후 출력
+                print_one_line(
+                    &output_file,
+                    &format!(
+                        "{}",
+                        translate_one_line(&input, &input_lang, &output_lang).await?
+                    ),
+                )?;
             }
         }
-        _ => return,
+        _ => {}
     }
+    Ok(())
 }
 
 /// translate.google.com에서 사용하는 발송 쿼리문을 생성한다.
@@ -142,4 +161,24 @@ async fn translate_one_line(
     let iter = &content[1][0][0][5];
 
     Ok(iter.members().nth(0).unwrap()[0].to_string())
+}
+
+/// 한 라인을 출력한다.
+fn print_one_line(
+    output_file: &Option<String>,
+    line: &String,
+) -> Result<(), Box<dyn std::error::Error>> {
+    match output_file {
+        Some(output_file) => {
+            let mut file = std::fs::OpenOptions::new()
+                .create(true)
+                .write(true)
+                .append(true)
+                .open(output_file)?;
+            file.write_all(line.as_bytes())?;
+            file.write_all(EOL.as_bytes())?;
+        }
+        None => println!("{}", line),
+    };
+    Ok(())
 }
