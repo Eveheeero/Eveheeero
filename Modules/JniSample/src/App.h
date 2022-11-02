@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jint JNICALL Java_App_mul
   (JNIEnv *, jclass, jint, jint);
 
+/*
+ * Class:     App
+ * Method:    init
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_App_init
+  (JNIEnv *, jclass);
+
 #ifdef __cplusplus
 }
 #endif

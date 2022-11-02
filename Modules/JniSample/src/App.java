@@ -5,9 +5,12 @@ public class App {
     }
 
     public static native int mul(int a, int b);
+    public static native void init();
 
     public static void main(String[] args) throws Exception {
         System.out.println("Hello, World!");
         System.out.println("mul(2, 3) = " + mul(2, 3));
+        init();
+        Runtime.getRuntime().exec("identify -verbose test.jpg");
     }
 }
