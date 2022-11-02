@@ -1,4 +1,4 @@
-use std::io::Write;
+use std::io::{BufRead, Write};
 
 use clap::Parser;
 use log::debug;
@@ -54,7 +54,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     &output_file,
                     &format!(
                         "{}",
-                        translate_one_line(&args, &input_lang, &output_lang).await?
+                        translate_one_line(args, input_lang.clone(), output_lang.clone()).await?
                     ),
                 )?;
             }
@@ -67,13 +67,33 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     &output_file,
                     &format!(
                         "{}",
-                        translate_one_line(&input, &input_lang, &output_lang).await?
+                        translate_one_line(input, input_lang.clone(), output_lang.clone()).await?
                     ),
                 )?;
             }
         },
         // 파일 전체 번역
-        2 => todo!(),
+        2 => {
+            let file_path = args.args.unwrap();
+            let file = std::fs::File::open(file_path)?;
+            let mut buf = std::io::BufReader::new(file);
+            let mut lines = Vec::new();
+            loop {
+                let mut line = String::new();
+                let len = buf.read_line(&mut line)?;
+                if len == 0 {
+                    break;
+                }
+                lines.push(translate_one_line(
+                    line,
+                    input_lang.clone(),
+                    output_lang.clone(),
+                ));
+            }
+            for line in lines {
+                print_one_line(&output_file, &format!("{}", line.await?))?;
+            }
+        }
         // 대화형 번역
         3 => {
             // 사용자가 종료할때까지 번역
@@ -85,7 +105,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     &output_file,
                     &format!(
                         "{}",
-                        translate_one_line(&input, &input_lang, &output_lang).await?
+                        translate_one_line(input, input_lang.clone(), output_lang.clone()).await?
                     ),
                 )?;
             }
@@ -145,12 +165,12 @@ async fn send_google_api_query(query: String) -> Result<String, Box<dyn std::err
 }
 
 async fn translate_one_line(
-    text: &String,
-    input_lang: &String,
-    output_lang: &String,
+    text: String,
+    input_lang: String,
+    output_lang: String,
 ) -> Result<String, Box<dyn std::error::Error>> {
     // translate.google.com 발송 쿼리문 생성
-    let query = build_google_api_query(text, input_lang, output_lang);
+    let query = build_google_api_query(&text, &input_lang, &output_lang);
 
     // 번역 후 결과물 (Json형태)
     let text = send_google_api_query(query).await?;
