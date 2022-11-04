@@ -4,26 +4,26 @@ import pandas as pd
 
 
 class Wrapper(bytes):
-    def __new__(self, *args, **kwargs):
-        return super().__new__(self, *args, **kwargs)
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls, *args, **kwargs)
 
     def __str__(self) -> str:
         return super().decode("utf-8")
 
 
-class UUIDWrapper(bytes):
+class UUIDWrapper(int):
     """
     128비트의 데이터(16바이트)를 래핑해주는 래퍼
     """
 
-    def __new__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
         """
         기본 생성자
 
         Returns:
             _type_: 추가적인 처리가 필요하지 않아 args와 kwargs를 그대로 넘겨줌
         """
-        return super().__new__(self, *args, **kwargs)
+        return super().__new__(cls, *args, **kwargs)
 
     def __str__(self) -> str:
         """
@@ -32,7 +32,7 @@ class UUIDWrapper(bytes):
         Returns:
             str: UUID형식에 맞는 데이터
         """
-        data = super()
+        data = '%032x' % self
         return '%s-%s-%s-%s-%s' % (
             data[:8], data[8:12], data[12:16], data[16:20], data[20:])
 
@@ -43,8 +43,8 @@ class UUIDWrapper(bytes):
         Returns:
             str: UUID 형식에 맞는 데이터
         """
-        iterator = super().__iter__()
-        return f"UUID Wrapper ({next(iterator):x} {next(iterator):x} {next(iterator):x} {next(iterator):x} {next(iterator):x} {next(iterator):x} {next(iterator):x} {next(iterator):x} {next(iterator):x} {next(iterator):x} {next(iterator):x} {next(iterator):x} {next(iterator):x} {next(iterator):x} {next(iterator):x} {next(iterator):x})"
+        data = '%032x' % self
+        return f"UUID Wrapper ({ data })"
 
 
 uuids = []
@@ -58,7 +58,7 @@ print("UUID")
 start_time = time.time()
 data = []
 for now in uuids:
-    data.append(UUIDWrapper(now.bytes))
+    data.append(UUIDWrapper(now.int))
 data = pd.Series(data)
 end_time = time.time()
 print(f"UUID Wrapper List Save Time is {end_time - start_time} seconds")

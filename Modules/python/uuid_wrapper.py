@@ -3,19 +3,58 @@
 # str - 1175MB
 # byte - 710MB, 단 문자열 출력 불가
 # UUIDWrapper - 871MB
-class UUIDWrapper(bytes):
+
+class UUIDWrapperInt(int):
     """
     128비트의 데이터(16바이트)를 래핑해주는 래퍼
+    UUID 내부 str을 할 때 사용되는 int데이터를 기반으로 래핑한다.
+    str(data)를 했을떄의 속도가 많이 개선됨
     """
 
-    def __new__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
         """
         기본 생성자
 
         Returns:
             _type_: 추가적인 처리가 필요하지 않아 args와 kwargs를 그대로 넘겨줌
         """
-        return super().__new__(self, *args, **kwargs)
+        return super().__new__(cls, *args, **kwargs)
+
+    def __str__(self) -> str:
+        """
+        str(data)를 했을때 나타나는 데이터
+
+        Returns:
+            str: UUID형식에 맞는 데이터
+        """
+        data = '%032x' % self
+        return '%s-%s-%s-%s-%s' % (
+            data[:8], data[8:12], data[12:16], data[16:20], data[20:])
+
+    def __repr__(self) -> str:
+        """
+        data 를 실행했을때 출력되는 데이터
+
+        Returns:
+            str: UUID 형식에 맞는 데이터
+        """
+        data = '%032x' % self
+        return f"UUID Wrapper ({ data })"
+
+
+class UUIDWrapperByte(bytes):
+    """
+    128비트의 데이터(16바이트)를 래핑해주는 래퍼
+    """
+
+    def __new__(cls, *args, **kwargs):
+        """
+        기본 생성자
+
+        Returns:
+            _type_: 추가적인 처리가 필요하지 않아 args와 kwargs를 그대로 넘겨줌
+        """
+        return super().__new__(cls, *args, **kwargs)
 
     def __str__(self) -> str:
         """
