@@ -24,8 +24,9 @@ class UUIDWrapper(bytes):
         Returns:
             str: UUID형식에 맞는 데이터
         """
-        iterator = super().__iter__()
-        return f"{next(iterator):x}{next(iterator):x}{next(iterator):x}{next(iterator):x}-{next(iterator):x}{next(iterator):x}-{next(iterator):x}{next(iterator):x}-{next(iterator):x}{next(iterator):x}-{next(iterator):x}{next(iterator):x}{next(iterator):x}{next(iterator):x}{next(iterator):x}{next(iterator):x}"
+        data = super()
+        return '%s-%s-%s-%s-%s' % (
+            data[:8], data[8:12], data[12:16], data[16:20], data[20:])
 
     def __repr__(self) -> str:
         """
