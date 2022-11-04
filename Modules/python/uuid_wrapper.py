@@ -14,6 +14,20 @@ class UUIDWrapperInt(int):
     def __new__(cls, *args, **kwargs):
         """
         기본 생성자
+        
+        Note. 래퍼 생성자의 *args, **kwargs를 data로 특정지어서 적용할 경우 시간 소요가 1.7배 정도로 줄어듬
+        Note. 래퍼 생성자를 삭제하면 시간 소요가 1.2배정도로 줄어듬
+        ```python
+        # 원본의 2배 정도 시간 소요
+        def __new__(cls, *args, **kwargs):
+            return super().__new__(cls, *args, **kwargs)
+        # 원본의 1.7배 정도 시간 소요
+        def __new__(cls, data: int):
+            return super().__new__(cls, data)
+        # 원본의 1.2배 정도 시간 소요
+        # def __new__(cls, data: int):
+        #     return super().__new__(cls, data)
+        ```
 
         Returns:
             _type_: 추가적인 처리가 필요하지 않아 args와 kwargs를 그대로 넘겨줌

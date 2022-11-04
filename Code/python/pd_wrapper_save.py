@@ -4,9 +4,6 @@ import pandas as pd
 
 
 class Wrapper(bytes):
-    def __new__(cls, *args, **kwargs):
-        return super().__new__(cls, *args, **kwargs)
-
     def __str__(self) -> str:
         return super().decode("utf-8")
 
@@ -15,15 +12,6 @@ class UUIDWrapper(int):
     """
     128비트의 데이터(16바이트)를 래핑해주는 래퍼
     """
-
-    def __new__(cls, *args, **kwargs):
-        """
-        기본 생성자
-
-        Returns:
-            _type_: 추가적인 처리가 필요하지 않아 args와 kwargs를 그대로 넘겨줌
-        """
-        return super().__new__(cls, *args, **kwargs)
 
     def __str__(self) -> str:
         """
@@ -58,7 +46,7 @@ print("UUID")
 start_time = time.time()
 data = []
 for now in uuids:
-    data.append(UUIDWrapper(now.int))
+    data.append(UUIDWrapper(int(now)))
 data = pd.Series(data)
 end_time = time.time()
 print(f"UUID Wrapper List Save Time is {end_time - start_time} seconds")
