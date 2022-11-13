@@ -42,9 +42,9 @@ async fn test_translate_multi_lines() {
 
 ### For example
 
-- google_translator \<Enter> is Console input, One line translation, Console output.
-- google_translator -i en -o ko -m 3 \<Enter> is Interactive console input, Multi line translation, Console output.
-- google_translator -m 2 -a foo.txt -f bar.txt \<Enter> is File input, Multi line translation, Console output.
+- translate \<Enter> is Console input, One line translation, Console output.
+- translate -i en -o ko -m 3 \<Enter> is Interactive console input, Multi line translation, Console output.
+- translate -m 2 -a foo.txt -f bar.txt \<Enter> is File input, Multi line translation, Console output.
 
 ## Hacking
 
