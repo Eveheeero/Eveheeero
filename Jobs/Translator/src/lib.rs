@@ -1,16 +1,22 @@
 use log::debug;
 
 /// translate.google.com에서 사용하는 발송 쿼리문을 생성한다.
+/// Hello\\\\nHello\\nHow Are You
+/// Google의 번역기에서 \ 을 입력하면 \\\\로 변환되며, 줄바꿈은 \\n으로 변환된다.
 pub fn build_google_api_query(text: &String, input_lang: &String, output_lang: &String) -> String {
     // 번역 쿼리문에는 줄바꿈이 \\n으로 들어가있다. 이에 맞추어 보내야한다.
-    let text = text.replace("\r\n", "\\\\n").replace("\n", "\\\\n");
+    let text = text
+        .replace("\\", "\\\\")
+        .replace("\r\n", "\\n")
+        .replace("\n", "\\n")
+        .replace("\\", "\\\\");
     // 쿼리문 설정
     let query = format!(
         // 구글 내부 쿼리문 형태에 따른다
         r#"[[["MkEWBc","[[\"{}\",\"{}\",\"{}\",true],[null]]",null,"generic"]]]"#,
         text, input_lang, output_lang
     );
-    debug!("query: {}", query);
+    debug!("Built Query : {}", query);
     query
 }
 
@@ -30,7 +36,7 @@ pub async fn send_google_api_query(query: String) -> Result<String, Box<dyn std:
     let builder = builder.query(&[("f.req", query)]);
     let response = builder.send().await?;
     let text = response.text().await?;
-    debug!("response: {}", text);
+    debug!("Google Response : {}", text);
 
     // 받아온 반환값 중 불필요한 내용 제거
     let text = text
@@ -45,7 +51,7 @@ pub async fn send_google_api_query(query: String) -> Result<String, Box<dyn std:
         .unwrap()
         .0
         .to_owned();
-    debug!("text: {}", text);
+    debug!("Stripped Response : {}", text);
     Ok(text)
 }
 
