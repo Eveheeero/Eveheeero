@@ -11,8 +11,8 @@ cargo install google_translator
 ## Usage
 
 ```text
-# google_translator --help
-Usage: google_translator [OPTIONS]
+# translate --help
+Usage: translate [OPTIONS]
 
 Options:
   -i, --input <INPUT_LANG>         Input language [default: auto]
@@ -21,6 +21,23 @@ Options:
   -a, --args <ARGS>                Args
   -f, --output file <OUTPUT_FILE>  Output File
   -h, --help                       Print help information
+```
+
+or...
+
+```rust
+#[tokio::test]
+async fn test_translate_multi_lines() {
+    let text = vec!["Hello, world!", "내 이름은 민수야.", "나는 20살이야."]
+        .iter()
+        .map(|x| x.to_string())
+        .collect();
+    let input_lang = "auto".to_string();
+    let output_lang = "fr".to_string();
+    let result = translate(text, input_lang, output_lang).await.unwrap();
+    dbg!(result);
+    assert!(true);
+}
 ```
 
 ### For example
@@ -37,8 +54,14 @@ In source, build_google_api_query function is prepared for multiple lines of inp
 
 If you want to get multiple lines of output, see the comment of send_google_api_query function, you can get values for similar results.
 
+## Version
+
+- 0.2.1 - Library Available, also structures.
+- 0.2.0 - Three mod Translate
+- 0.1.0 - Publish Cargo and Simple Translate
+
 ## End
 
-The project is a toy project developed based on content that was used for a while while working, and may or may not be improved, libraryized, and error corrected.
+The project is a toy project developed based on content that was used for a while while working, and may or may not be improved, error corrected.
 
 Because it uses Google's undocumented API, please be careful when using it.

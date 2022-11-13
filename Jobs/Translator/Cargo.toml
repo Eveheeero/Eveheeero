@@ -1,11 +1,11 @@
 [package]
 name = "google_translator"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 authors = ["Eveheeero <xhve00000@gmail.com>"]
 license = "MIT"
 description = "Simple Custom Google Translator"
-repository = "https://github.com/Eveheeero/Eveheeero/tree/de80c7e5645e85b1c645f0914024823972485861/Jobs/Translator"
+repository = "https://github.com/Eveheeero/Eveheeero/tree/main/Jobs/Translator"
 
 [[bin]]
 name = "translate"
