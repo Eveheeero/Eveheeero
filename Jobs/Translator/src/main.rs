@@ -1,4 +1,4 @@
-use std::io::{BufRead, Write};
+use std::io::Write;
 
 use google_translator::*;
 
@@ -75,24 +75,34 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
         // 파일 전체 번역
         2 => {
+            // 파일 경로 추출
             let file_path = args.args.unwrap();
-            let file = std::fs::File::open(file_path)?;
-            let mut buf = std::io::BufReader::new(file);
-            let mut lines = Vec::new();
-            loop {
-                let mut line = String::new();
-                let len = buf.read_line(&mut line)?;
-                if len == 0 {
-                    break;
-                }
-                lines.push(translate_one_line(
-                    line,
-                    input_lang.clone(),
-                    output_lang.clone(),
-                ));
-            }
+            // 데이터를 라인별로 벡터로 생성
+            let lines = std::fs::read_to_string(file_path)?
+                .split("\n")
+                .map(|x| x.trim().to_owned())
+                .collect::<Vec<_>>();
+
+            // 5000글자 기준으로 그룹화
+            let mut translated = Vec::new();
+            let mut count = 0;
+            let mut group = Vec::new();
             for line in lines {
-                print_one_line(&output_file, &format!("{}", line.await?))?;
+                count += line.len();
+                if count >= 5000 {
+                    translated.push(translate(group, input_lang.clone(), output_lang.clone()));
+                    group = Vec::new();
+                    count = line.len();
+                }
+                group.push(line);
+            }
+            translated.push(translate(group, input_lang, output_lang));
+
+            for now in translated {
+                let result = now.await?;
+                for line in result.output_text {
+                    print_one_line(&output_file, &format!("{}", line[0]))?;
+                }
             }
         }
         // 대화형 번역
