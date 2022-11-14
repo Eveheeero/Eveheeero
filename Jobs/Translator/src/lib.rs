@@ -78,7 +78,7 @@ pub async fn send_google_api_query(query: String) -> Result<String, Box<dyn std:
         .split_at(21)
         .1
         .split_once(r#"",null,null,null,"generic"],["#)
-        .unwrap()
+        .ok_or("Response Error. Maybe Query is Too long, Max Query length is 5000. because of the padding for special characters, recommend is 3000 to 4000 characters")?
         .0
         .to_owned();
     debug!("Stripped Response : {}", text);

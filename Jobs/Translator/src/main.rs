@@ -89,7 +89,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let mut group = Vec::new();
             for line in lines {
                 count += line.len();
-                if count >= 5000 {
+                if count >= 4000 {
                     translated.push(tokio::spawn(translate(
                         group,
                         input_lang.clone(),
