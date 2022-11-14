@@ -2,6 +2,8 @@
 
 **This Program use Google's undocumented api, service may not be available at some day...**
 
+If translation doesn't work well, You can change the API of the source code according to the API format transmitted from inside Google translator.
+
 ## Install
 
 ```sh
@@ -46,16 +48,9 @@ async fn test_translate_multi_lines() {
 - translate -i en -o ko -m 3 \<Enter> is Interactive console input, Multi line translation, Console output.
 - translate -m 2 -a foo.txt -f bar.txt \<Enter> is File input, Multi line translation, Console output.
 
-## Hacking
-
-If translation doesn't work well, You can change the API of the source code according to the API format transmitted from inside Google translator.
-
-In source, build_google_api_query function is prepared for multiple lines of input using \\r\\n, and send_google_api_query function is prepared for multiple lines of output.
-
-If you want to get multiple lines of output, see the comment of send_google_api_query function, you can get values for similar results.
-
 ## Version
 
+- ... - 실행파일에 대한 병렬처리 개선, 따옴표에 대한 오류 수정, 대상 언어에 대한 Enum화
 - 0.2.1 - Library Available, also structures.
 - 0.2.0 - Three mod Translate
 - 0.1.0 - Publish Cargo and Simple Translate
