@@ -90,16 +90,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             for line in lines {
                 count += line.len();
                 if count >= 5000 {
-                    translated.push(translate(group, input_lang.clone(), output_lang.clone()));
+                    translated.push(tokio::spawn(translate(
+                        group,
+                        input_lang.clone(),
+                        output_lang.clone(),
+                    )));
                     group = Vec::new();
                     count = line.len();
                 }
                 group.push(line);
             }
-            translated.push(translate(group, input_lang, output_lang));
+            translated.push(tokio::spawn(translate(group, input_lang, output_lang)));
 
             for now in translated {
-                let result = now.await?;
+                let result = now.await??;
                 for line in result.output_text {
                     print_one_line(&output_file, &format!("{}", line[0]))?;
                 }

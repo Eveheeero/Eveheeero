@@ -22,14 +22,15 @@ pub use lang::{InputLang, OutputLang};
 
 /// translate.google.com에서 사용하는 발송 쿼리문을 생성한다.
 /// Hello\\\\nHello\\nHow Are You
-/// Google의 번역기에서 \ 을 입력하면 \\\\로 변환되며, 줄바꿈은 \\n으로 변환된다.
+/// Google의 번역기에서 \ 을 입력하면 \\\\로 변환되며, 줄바꿈은 \\n으로, "은 \\\"으로 변환된다.
 pub fn build_google_api_query(text: &String, input_lang: &String, output_lang: &String) -> String {
     // 번역 쿼리문에는 줄바꿈이 \\n으로 들어가있다. 이에 맞추어 보내야한다.
     let text = text
         .replace("\\", "\\\\")
         .replace("\r\n", "\\n")
         .replace("\n", "\\n")
-        .replace("\\", "\\\\");
+        .replace("\\", "\\\\")
+        .replace("\"", "\\\\\\\"");
     // 쿼리문 설정
     let query = format!(
         // 구글 내부 쿼리문 형태에 따른다
@@ -139,7 +140,7 @@ pub async fn translate(
     text: Vec<String>,
     input_lang: String,
     output_lang: String,
-) -> Result<TranslateResult, Box<dyn std::error::Error>> {
+) -> Result<TranslateResult, String> {
     // 입력값 생성
     let text = text.join("\n");
 
@@ -147,7 +148,10 @@ pub async fn translate(
     let query = build_google_api_query(&text, &input_lang, &output_lang);
 
     // 번역 후 결과물 (Json형태)
-    let response = send_google_api_query(query).await?;
+    let response = match send_google_api_query(query).await {
+        Ok(response) => response,
+        Err(e) => return Err(format!("Google API Error : {}", e)),
+    };
 
     let result = response_to_result(response);
 
