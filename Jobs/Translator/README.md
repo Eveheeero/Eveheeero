@@ -34,8 +34,8 @@ async fn test_translate_multi_lines() {
         .iter()
         .map(|x| x.to_string())
         .collect();
-    let input_lang = "auto".to_string();
-    let output_lang = "fr".to_string();
+    let input_lang = "auto";
+    let output_lang = "fr";
     let result = translate(text, input_lang, output_lang).await.unwrap();
     dbg!(result);
     assert!(true);
@@ -50,7 +50,7 @@ async fn test_translate_multi_lines() {
 
 ## Version
 
-- ... - 실행파일에 대한 병렬처리 개선, 따옴표에 대한 오류 수정, 대상 언어에 대한 Enum화
+- 0.2.2 - Improved parallel processing for executable files, corrected errors for quotation marks, and enumerated target language
 - 0.2.1 - Library Available, also structures.
 - 0.2.0 - Three mod Translate
 - 0.1.0 - Publish Cargo and Simple Translate
