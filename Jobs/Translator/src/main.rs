@@ -55,7 +55,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     &output_file,
                     &format!(
                         "{}",
-                        translate_one_line(args, input_lang.clone(), output_lang.clone()).await?
+                        translate_one_line(args, input_lang, output_lang).await?
                     ),
                 )?;
             }
@@ -68,7 +68,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     &output_file,
                     &format!(
                         "{}",
-                        translate_one_line(input, input_lang.clone(), output_lang.clone()).await?
+                        translate_one_line(input, input_lang, output_lang).await?
                     ),
                 )?;
             }

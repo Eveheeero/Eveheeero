@@ -23,7 +23,14 @@ pub use lang::{InputLang, OutputLang};
 /// translate.google.com에서 사용하는 발송 쿼리문을 생성한다.
 /// Hello\\\\nHello\\nHow Are You
 /// Google의 번역기에서 \ 을 입력하면 \\\\로 변환되며, 줄바꿈은 \\n으로, "은 \\\"으로 변환된다.
-pub fn build_google_api_query(text: &String, input_lang: &String, output_lang: &String) -> String {
+pub fn build_google_api_query<T, Y>(text: &String, input_lang: T, output_lang: Y) -> String
+where
+    T: Into<InputLang>,
+    Y: Into<OutputLang>,
+{
+    let input_lang: InputLang = input_lang.into();
+    let output_lang: OutputLang = output_lang.into();
+
     // 번역 쿼리문에는 줄바꿈이 \\n으로 들어가있다. 이에 맞추어 보내야한다.
     let text = text
         .replace("\\", "\\\\")
@@ -35,7 +42,9 @@ pub fn build_google_api_query(text: &String, input_lang: &String, output_lang: &
     let query = format!(
         // 구글 내부 쿼리문 형태에 따른다
         r#"[[["MkEWBc","[[\"{}\",\"{}\",\"{}\",true],[null]]",null,"generic"]]]"#,
-        text, input_lang, output_lang
+        text,
+        input_lang.to_string(),
+        output_lang.to_string()
     );
     debug!("Built Query : {}", query);
     query
@@ -136,16 +145,23 @@ pub fn response_to_result(response: String) -> TranslateResult {
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////// */
 
-pub async fn translate(
+pub async fn translate<T, Y>(
     text: Vec<String>,
-    input_lang: String,
-    output_lang: String,
-) -> Result<TranslateResult, String> {
+    input_lang: T,
+    output_lang: Y,
+) -> Result<TranslateResult, String>
+where
+    T: Into<InputLang>,
+    Y: Into<OutputLang>,
+{
+    let input_lang: InputLang = input_lang.into();
+    let output_lang: OutputLang = output_lang.into();
+
     // 입력값 생성
     let text = text.join("\n");
 
     // translate.google.com 발송 쿼리문 생성
-    let query = build_google_api_query(&text, &input_lang, &output_lang);
+    let query = build_google_api_query(&text, input_lang, output_lang);
 
     // 번역 후 결과물 (Json형태)
     let response = match send_google_api_query(query).await {
@@ -158,11 +174,15 @@ pub async fn translate(
     Ok(result)
 }
 
-pub async fn translate_one_line(
+pub async fn translate_one_line<T, Y>(
     text: String,
-    input_lang: String,
-    output_lang: String,
-) -> Result<String, Box<dyn std::error::Error>> {
+    input_lang: T,
+    output_lang: Y,
+) -> Result<String, Box<dyn std::error::Error>>
+where
+    T: Into<InputLang>,
+    Y: Into<OutputLang>,
+{
     let text = vec![text];
 
     let result = translate(text, input_lang, output_lang).await?;
@@ -181,8 +201,8 @@ mod tests {
     #[tokio::test]
     async fn test_translate_one_line() {
         let text = "Hello, world!".to_string();
-        let input_lang = "en".to_string();
-        let output_lang = "ko".to_string();
+        let input_lang = "en";
+        let output_lang = "ko";
         let result = translate_one_line(text, input_lang, output_lang)
             .await
             .unwrap();
@@ -196,8 +216,8 @@ mod tests {
             .iter()
             .map(|x| x.to_string())
             .collect();
-        let input_lang = "auto".to_string();
-        let output_lang = "fr".to_string();
+        let input_lang = "auto";
+        let output_lang = "fr";
         let result = translate(text, input_lang, output_lang).await.unwrap();
         dbg!(result);
         assert!(true);
