@@ -17,6 +17,9 @@ pub struct TranslateResult {
     pub output_tts: Option<Vec<String>>,
 }
 
+mod lang;
+pub use lang::{InputLang, OutputLang};
+
 /// translate.google.com에서 사용하는 발송 쿼리문을 생성한다.
 /// Hello\\\\nHello\\nHow Are You
 /// Google의 번역기에서 \ 을 입력하면 \\\\로 변환되며, 줄바꿈은 \\n으로 변환된다.
