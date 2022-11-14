@@ -112,18 +112,34 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let mut input = String::new();
                 std::io::stdin().read_line(&mut input)?;
                 // 번역 후 출력
-                print_one_line(
-                    &output_file,
-                    &format!(
-                        "{}",
-                        translate_one_line(input, input_lang.clone(), output_lang.clone()).await?
-                    ),
-                )?;
+                tokio::spawn(translate_buf(
+                    output_file.clone(),
+                    input,
+                    input_lang.clone(),
+                    output_lang.clone(),
+                ));
             }
         }
         _ => {}
     }
     Ok(())
+}
+
+async fn translate_buf(
+    output_file: Option<String>,
+    text: String,
+    input_lang: String,
+    output_lang: String,
+) {
+    let result = translate_one_line(text, input_lang, output_lang).await;
+    match result {
+        Ok(result) => {
+            print_one_line(&output_file, &format!("{}", result)).unwrap();
+        }
+        Err(e) => {
+            print_one_line(&output_file, &format!("{}", e)).unwrap();
+        }
+    }
 }
 
 /// 한 라인을 출력한다.
