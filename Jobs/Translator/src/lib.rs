@@ -166,7 +166,7 @@ where
     // 번역 후 결과물 (Json형태)
     let response = match send_google_api_query(query).await {
         Ok(response) => response,
-        Err(e) => return Err(format!("Google API Error : {}", e)),
+        Err(e) => return Err(format!("Query Send Error! : {}", e)),
     };
 
     let result = response_to_result(response);
@@ -178,7 +178,7 @@ pub async fn translate_one_line<T, Y>(
     text: String,
     input_lang: T,
     output_lang: Y,
-) -> Result<String, Box<dyn std::error::Error>>
+) -> Result<String, String>
 where
     T: Into<InputLang>,
     Y: Into<OutputLang>,
