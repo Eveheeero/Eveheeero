@@ -62,8 +62,26 @@ class Arrow:
         Returns:
             float: 물체가 바닥에 틩긴 후, 얼마만큼의 거리를 올라갔는지를 반환한다.
         """
-        # 작성하기
-        return 0
+        # 이전 값 연산
+        last_position = now_position - self._acc
+        last_acc = self._acc + 9.8
+
+        # 언제 바닥에 부딪혔는지 계산
+        # 위치가 1에서 -7로 바뀌었다고 하면, 전체 거리는 8이며, 0부터 1까지의 거리는 1이므로 1/8 타이밍으로 바닥에 부딪혔다고 볼 수 있다.
+        # 하지만 기존 연산에는 0 이하로 떨어졌을 때에도 계속해서 가속도가 붙었을것이므로, 이에 대한 가중치를 구하기 위해 1.4를 곱한다.
+        # 다음 연산은, last_position과  1 - now_position이 양수가 될 것을 기대하여 abs를 제거하였으며, 기존은 abs(last_position) + abs(1 - now_position)이었습니다.
+        bounced_timing = pow(
+            last_position / (last_position - now_position), 1.4)
+
+        # 바닥에 닿았을 때의 물체의 운동속도
+        acc_at_bounce = last_acc - (9.8 * bounced_timing)
+
+        # 바닥에 닿은 뒤, 올라갔을때의 운동속도
+        result_acc = -acc_at_bounce - (9.8 * (1 - bounced_timing))
+
+        self._acc = result_acc
+
+        return result_acc
 
     def _event(self) -> None:
         """
