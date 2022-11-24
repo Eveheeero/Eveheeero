@@ -22,8 +22,9 @@ func main() {
 
 func format(path string) {
 	exist := fileExists(path)
-	fmt.Println(exist)
-	core.Test()
+	println(exist)
+	f, _ := core.NewFormatter(path)
+	f.Run()
 }
 
 func fileExists(path string) bool {
