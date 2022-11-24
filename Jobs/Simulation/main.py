@@ -1,8 +1,10 @@
-import ball
+from ball import Ball
 
 if __name__ == "__main__":
-    print("Hello World!")
-    b1 = ball.Ball()
+    objects = []
+    objects.append(Ball())
     while True:
-        b1.event()
-        pass
+        for one in objects:
+            one.event()
+        for one in objects:
+            one.print()

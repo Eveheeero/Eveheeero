@@ -9,3 +9,6 @@ class Ball(object.Object):
     def event(self) -> None:
         super().event()
         pass
+
+    def print(self) -> None:
+        print(self.get_position())
