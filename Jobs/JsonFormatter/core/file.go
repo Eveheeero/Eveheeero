@@ -1,8 +1,11 @@
 package core
 
-func (f *Formatter) read() string {
+func (f *Formatter) read() []byte {
 	buf := make([]byte, 1024)
 	f.reader.Read(buf)
-	result := string(buf)
-	return result
+	return buf
+}
+
+func (f *Formatter) write(buf []byte) {
+	f.temp_file.Write(buf)
 }
