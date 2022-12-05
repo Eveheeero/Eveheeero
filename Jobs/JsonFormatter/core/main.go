@@ -24,5 +24,16 @@ func NewFormatter(url string) (*Formatter, error) {
 
 func (f *Formatter) Run() {
 	readed := f.read()
-	println(readed)
+
+	var in_string bool
+	level := 0
+	for i, b := range readed {
+		switch b {
+		case '{':
+			if !in_string {
+				level += 1
+			}
+		case '}':
+		}
+	}
 }

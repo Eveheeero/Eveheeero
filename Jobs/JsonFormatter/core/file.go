@@ -9,3 +9,7 @@ func (f *Formatter) read() []byte {
 func (f *Formatter) write(buf []byte) {
 	f.temp_file.Write(buf)
 }
+
+func (f *Formatter) save() {
+
+}
