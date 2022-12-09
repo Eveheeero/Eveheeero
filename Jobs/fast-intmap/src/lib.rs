@@ -1,7 +1,7 @@
 use std::ops::BitAnd;
 
 pub struct IntMapU64<T> {
-    data: Vec<Vec<Vec<Vec<(u64, T)>>>>,
+    data: Vec<Vec<Vec<(u64, T)>>>,
 }
 
 impl<T> Default for IntMapU64<T> {
@@ -11,11 +11,7 @@ impl<T> Default for IntMapU64<T> {
         for _ in 0..256 {
             let mut data2 = vec![];
             for _ in 0..256 {
-                let mut data3 = vec![];
-                for _ in 0..256 {
-                    data3.push(Vec::new());
-                }
-                data2.push(data3);
+                data2.push(vec![]);
             }
             data.push(data2);
         }
@@ -26,33 +22,32 @@ impl<T> Default for IntMapU64<T> {
 
 impl<T> IntMapU64<T> {
     #[inline]
-    fn get_key(&self, data: u64) -> (usize, usize, usize) {
-        let one = data.rotate_right(17);
+    fn get_key(&self, data: u64) -> (usize, usize) {
+        let one = data.rotate_left(16) * 2;
         let two = data.rotate_left(5) + data;
-        let three = data ^ 0xbe;
-        (cast(one), cast(two), cast(three))
+        (cast(one), cast(two))
     }
 
     #[inline]
     pub fn get(&self, key: u64) -> Option<&T> {
-        let (one, two, three) = self.get_key(key);
-        let vec = &*self.data[one][two][three];
+        let (one, two) = self.get_key(key);
+        let vec = &*self.data[one][two];
         vec.iter()
             .find_map(|(k, v)| if *k == key { Some(v) } else { None })
     }
 
     #[inline]
     pub fn get_mut(&mut self, key: u64) -> Option<&mut T> {
-        let (one, two, three) = self.get_key(key);
-        let vec = &mut *self.data[one][two][three];
+        let (one, two) = self.get_key(key);
+        let vec = &mut *self.data[one][two];
         vec.iter_mut()
             .find_map(|(k, v)| if *k == key { Some(v) } else { None })
     }
 
     #[inline]
     pub fn insert(&mut self, key: u64, value: T) -> Option<T> {
-        let (one, two, three) = self.get_key(key);
-        let ptr = &mut self.data[one][two][three];
+        let (one, two) = self.get_key(key);
+        let ptr = &mut self.data[one][two];
         let vec = &mut *ptr;
 
         for item in vec {
