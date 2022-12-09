@@ -1,53 +1,59 @@
+use std::ops::BitAnd;
+
 pub struct IntMapU64<T> {
-    data: [[[*mut Vec<(u64, T)>; 64]; 64]; 64],
+    data: Vec<Vec<Vec<Vec<(u64, T)>>>>,
 }
 
 impl<T> Default for IntMapU64<T> {
     fn default() -> Self {
-        let mut data = [[[std::ptr::null_mut(); 64]; 64]; 64];
-        for i in 0..64 {
-            for j in 0..64 {
-                for k in 0..64 {
-                    data[i][j][k] = Box::into_raw(Box::new(Vec::new()));
+        // iter::repeat를 사용하여 객체생성
+        let mut data = vec![];
+        for _ in 0..256 {
+            let mut data2 = vec![];
+            for _ in 0..256 {
+                let mut data3 = vec![];
+                for _ in 0..256 {
+                    data3.push(Vec::new());
                 }
+                data2.push(data3);
             }
+            data.push(data2);
         }
+
         Self { data }
     }
 }
 
 impl<T> IntMapU64<T> {
-    #[inline(always)]
+    #[inline]
     fn get_key(&self, data: u64) -> (usize, usize, usize) {
-        unsafe {
-            let one = std::mem::transmute(data >> 17 & 0xff);
-            let two = std::mem::transmute((data << 5 + data) & 0xff);
-            let three = std::mem::transmute(data ^ 0xbe);
-            (one, two, three)
-        }
+        let one = data.rotate_right(17);
+        let two = data.rotate_left(5) + data;
+        let three = data ^ 0xbe;
+        (cast(one), cast(two), cast(three))
     }
 
     #[inline]
     pub fn get(&self, key: u64) -> Option<&T> {
-        let (one, ones, zeros) = self.get_key(key);
-        let vec = unsafe { &*self.data[one][ones][zeros] };
+        let (one, two, three) = self.get_key(key);
+        let vec = &*self.data[one][two][three];
         vec.iter()
             .find_map(|(k, v)| if *k == key { Some(v) } else { None })
     }
 
     #[inline]
     pub fn get_mut(&mut self, key: u64) -> Option<&mut T> {
-        let (one, ones, zeros) = self.get_key(key);
-        let vec = unsafe { &mut *self.data[one][ones][zeros] };
+        let (one, two, three) = self.get_key(key);
+        let vec = &mut *self.data[one][two][three];
         vec.iter_mut()
             .find_map(|(k, v)| if *k == key { Some(v) } else { None })
     }
 
     #[inline]
     pub fn insert(&mut self, key: u64, value: T) -> Option<T> {
-        let (one, ones, zeros) = self.get_key(key);
-        let ptr = self.data[one][ones][zeros];
-        let vec = unsafe { &mut *ptr };
+        let (one, two, three) = self.get_key(key);
+        let ptr = &mut self.data[one][two][three];
+        let vec = &mut *ptr;
 
         for item in vec {
             if item.0 == key {
@@ -55,10 +61,19 @@ impl<T> IntMapU64<T> {
             }
         }
 
-        let vec = unsafe { &mut *ptr };
+        let vec = &mut *ptr;
         vec.push((key, value));
         None
     }
+}
+
+#[inline(always)]
+fn cast<T, Y>(x: T) -> Y
+where
+    T: Sized,
+    Y: Sized + BitAnd<Output = Y> + From<u8>,
+{
+    unsafe { std::mem::transmute_copy::<T, Y>(&x) & Y::from(0xff) }
 }
 
 #[cfg(test)]
@@ -67,8 +82,7 @@ mod tests {
 
     #[test]
     fn test() {
-        println!("Hello, world!");
-        let mut map = IntMapU64::default();
+        let mut map: IntMapU64<u64> = IntMapU64::default();
         for i in 0..1000 {
             map.insert(i, i);
         }
