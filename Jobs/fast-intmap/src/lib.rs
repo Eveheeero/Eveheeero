@@ -1,74 +1,127 @@
-use std::ops::BitAnd;
+use parking_lot::RwLock;
 
+#[derive(Default, Debug)]
 pub struct IntMapU64<T> {
-    data: Vec<Vec<Vec<(u64, T)>>>,
+    data: Box<Inner<T>>,
+    depth: usize,
+    key_box: RwLock<Vec<usize>>,
+    size: usize,
+    capacity: usize,
 }
 
-impl<T> Default for IntMapU64<T> {
-    fn default() -> Self {
-        // iter::repeat를 사용하여 객체생성
-        let mut data = vec![];
-        for _ in 0..256 {
-            let mut data2 = vec![];
-            for _ in 0..256 {
-                data2.push(vec![]);
-            }
-            data.push(data2);
-        }
-
-        Self { data }
-    }
+#[derive(Default, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+enum Inner<T> {
+    #[default]
+    Empty,
+    Level([Box<Inner<T>>; 16]),
+    Data(Vec<(u64, T)>),
 }
 
 impl<T> IntMapU64<T> {
     #[inline]
-    fn get_key(&self, data: u64) -> (usize, usize) {
-        let one = data.rotate_left(16) * 2;
-        let two = data.rotate_left(5) + data;
-        (cast(one), cast(two))
+    fn get_key(&self, data: u64) {
+        let mut key_box = self.key_box.write();
+        let data = data >> (64 - self.depth);
+        key_box.resize(self.depth, Default::default());
+        for i in 0..self.depth {
+            key_box[i] = Self::cast(
+                11400714819323198549u64
+                    .wrapping_shr(Self::cast(i * 5))
+                    .wrapping_mul(data),
+            );
+        }
+    }
+
+    #[inline(always)]
+    fn cast<Z, X>(x: Z) -> X
+    where
+        Z: Sized,
+        X: Sized,
+    {
+        unsafe { std::mem::transmute_copy::<Z, X>(&x) }
     }
 
     #[inline]
-    pub fn get(&self, key: u64) -> Option<&T> {
-        let (one, two) = self.get_key(key);
-        let vec = &*self.data[one][two];
+    pub fn get(&self, key: &u64) -> Option<&T> {
+        let key = *key;
+        self.get_key(key);
+
+        let mut inner: &Box<Inner<T>> = &self.data;
+        for key in self.key_box.read().iter() {
+            inner = match inner.as_ref() {
+                Inner::Level(level) => &level[*key],
+                _ => unreachable!(),
+            }
+        }
+
+        let vec = match inner.as_ref() {
+            Inner::Data(data) => data,
+            _ => unreachable!(),
+        };
         vec.iter()
             .find_map(|(k, v)| if *k == key { Some(v) } else { None })
     }
 
     #[inline]
-    pub fn get_mut(&mut self, key: u64) -> Option<&mut T> {
-        let (one, two) = self.get_key(key);
-        let vec = &mut *self.data[one][two];
-        vec.iter_mut()
-            .find_map(|(k, v)| if *k == key { Some(v) } else { None })
-    }
+    pub fn insert(&mut self, key_o: u64, value: T) -> Option<T> {
+        if self.size >= self.capacity {
+            self.capacity = self.size.next_power_of_two();
+            self.realloc();
+        }
+        self.get_key(key_o);
 
-    #[inline]
-    pub fn insert(&mut self, key: u64, value: T) -> Option<T> {
-        let (one, two) = self.get_key(key);
-        let ptr = &mut self.data[one][two];
-        let vec = &mut *ptr;
-
-        for item in vec {
-            if item.0 == key {
-                return Some(std::mem::replace(&mut item.1, value));
-            }
+        let mut inner: &mut Box<Inner<T>> = &mut self.data;
+        for key in self.key_box.read().iter() {
+            if let Inner::Empty = inner.as_ref() {
+                *inner = Box::new(Inner::Level([
+                    Box::new(Inner::<T>::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                    Box::new(Inner::Empty),
+                ]));
+            };
+            inner = if let Inner::Level(level) = inner.as_mut() {
+                &mut level[*key]
+            } else {
+                unreachable!()
+            };
         }
 
-        let vec = &mut *ptr;
-        vec.push((key, value));
-        None
-    }
-}
+        let vec = match inner.as_mut() {
+            Inner::Data(data) => data,
+            Inner::Empty => {
+                *inner = Box::new(Inner::Data(vec![(key_o, value)]));
+                return None;
+            }
+            _ => unreachable!(),
+        };
 
-#[inline(always)]
-fn cast<T, Y>(x: T) -> Y
-where
-    T: Sized,
-    Y: Sized + BitAnd<Output = Y> + From<u8>,
-{
-    unsafe { std::mem::transmute_copy::<T, Y>(&x) & Y::from(0xff) }
+        if let Some((_, v)) = vec.iter_mut().find(|(k, _)| *k == key_o) {
+            return Some(std::mem::replace(v, value));
+        }
+
+        vec.push((key_o, value));
+        return None;
+    }
+
+    fn realloc(&mut self) {
+        // depth 설정
+        // 3depth에 있는 데이터에 대해 tree로 변경하고 4depth에 있는 데이터로 설정
+        self.depth = self.capacity.next_power_of_two().trailing_zeros() as usize / 4;
+        todo!()
+    }
 }
 
 #[cfg(test)]
@@ -82,7 +135,7 @@ mod tests {
             map.insert(i, i);
         }
         for i in 0..1000 {
-            assert!(map.get(i).is_some());
+            assert!(map.get(&i).is_some());
         }
     }
 }

@@ -35,7 +35,7 @@ fn bench_get(b: &mut Bencher) {
     }
     b.iter(|| {
         for i in 0..100000 {
-            assert!(map.get(i).is_some());
+            assert!(map.get(&i).is_some());
         }
     });
 }
