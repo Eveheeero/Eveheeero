@@ -1,0 +1,23 @@
+[package]
+name = "hook"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "windows"
+path = "src/windows.rs"
+
+[[target.'cfg(target_os = "windows")'.bin]]
+name = "winapi"
+path = "src/winapi.rs"
+
+[dependencies]
+
+# [target.'cfg(target_os = "windows")'.dependencies.windows]
+[dependencies.windows]
+version = "0.43.0"
+features = [ "Win32_Foundation", "Win32_System_LibraryLoader", "Win32_System_Threading", "Win32_System_Diagnostics_Debug", "Win32_UI_WindowsAndMessaging" ]
+
+[dependencies.winapi]
+version = "0.3.9"
+features = [ "winuser", "processthreadsapi" ]
