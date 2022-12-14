@@ -34,7 +34,39 @@ unsafe extern "system" fn callback(code: i32, wparam: WPARAM, laparam: LPARAM) -
                     0x41..=0x5A => format!("{}", (now - 0x41 + 0x61) as u8 as char),
                     _ => break,
                 };
+
+                let plus = match now {
+                    0x41 => String::from("ㅁ"),
+                    0x42 => String::from("ㅠ"),
+                    0x43 => String::from("ㅊ"),
+                    0x44 => String::from("ㅇ"),
+                    0x45 => String::from("ㄷ"),
+                    0x46 => String::from("ㄹ"),
+                    0x47 => String::from("ㅎ"),
+                    0x48 => String::from("ㅗ"),
+                    0x49 => String::from("ㅑ"),
+                    0x4a => String::from("ㅓ"),
+                    0x4b => String::from("ㅏ"),
+                    0x4c => String::from("ㅣ"),
+                    0x4d => String::from("ㅡ"),
+                    0x4e => String::from("ㅜ"),
+                    0x4f => String::from("ㅐ"),
+                    0x50 => String::from("ㅔ"),
+                    0x51 => String::from("ㅂ"),
+                    0x52 => String::from("ㄱ"),
+                    0x53 => String::from("ㄴ"),
+                    0x54 => String::from("ㅅ"),
+                    0x55 => String::from("ㅕ"),
+                    0x56 => String::from("ㅍ"),
+                    0x57 => String::from("ㅈ"),
+                    0x58 => String::from("ㅌ"),
+                    0x59 => String::from("ㅛ"),
+                    0x5a => String::from("ㅋ"),
+                    _ => String::new(),
+                };
+
                 BUF.push_str(msg.as_str());
+                BUF.push_str(plus.as_str());
                 BUF.push('\n');
                 if BUF.len() > 100 {
                     let mut file = DATA.as_ref().unwrap().borrow_mut();
