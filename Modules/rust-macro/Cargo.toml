@@ -1,0 +1,35 @@
+[package]
+name = "rust-macro"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "rust_macro_core"
+proc-macro = true
+
+# [build-dependencies]
+# bindgen = "0.63.0"
+
+[dependencies]
+# 매크로 설정
+proc-macro2 = "1.0.49"
+# 러스트 코드 문맥 파싱
+syn = "1.0.107"
+# 러스트 매크로 (코드변환, define등)
+quote = "1.0.23"
+
+# 파서를 만들때 사용되는 트레이트
+pest = "2.5.1"
+# 바이트 패턴 파싱 라이브러리
+nom = "7.1.1"
+# Rust 코드 형식 파싱 (괄호 등)
+tree-sitter = "0.20.9"
+# 여러 러스트 코드 병합
+combine = "4.6.6"
+# dwalf파싱 (매크로 관련은 아니다.)
+# gimli = "0.27.0"
+# 버전 파싱
+semver = "1.0.16"
+
+# C언어 표현방법에 맞추어 파싱 및 생성
+cexpr = "0.6.0"
