@@ -23,12 +23,12 @@ pub(crate) unsafe fn write_to_file() -> ! {
     // std::fs::remove_file(OUTPATH.as_ref().unwrap()).ok();
     let mut file = std::fs::File::create(OUTPATH.as_ref().unwrap()).unwrap();
     loop {
-        if BUF.len() < 100 {
+        if BUF.len() == 0 {
             sleep(Duration::from_secs(10));
             continue;
         }
         let mut buf = String::new();
-        for _ in 0..100 {
+        for _ in 0..BUF.len() {
             let input = BUF.pop_front().unwrap();
             match input {
                 Input::Keyboard {

@@ -34,8 +34,11 @@ unsafe extern "system" fn callback_keyboard(code: i32, wparam: WPARAM, lparam: L
 
             // 키보드를 방금 누른상태, 즉 이전에 안눌려있었으며 지금 눌려있는 상태면 진행, 아니면 종료 (0x8000)
             // 앞의 1비트가 현재 눌려있는지, 뒤의 1비트가 이전에 눌려있었는지. (1이 true)
+            // GetAsyncKeyState가 너무 빨리 종료되어서, 뒤의 1이 사라지기때문에 변경하였다.
             let keystate = GetAsyncKeyState(keycode.try_into().unwrap());
-            if keystate.leading_zeros() == 0 && keystate.trailing_ones() == 0 {
+            if keystate.leading_zeros() == 0
+            /* && keystate.trailing_ones() == 0 */
+            {
             } else {
                 break 'brace;
             }
