@@ -2,29 +2,41 @@ package writer
 
 import (
 	"fmt"
+	"log"
 	"memo/util"
 	"os"
 	"strings"
 	"time"
 )
 
-func DefaultDateWriter() {
-	path := util.GetAppFolder()
-	path = strings.Join([]string{path, "date"}, "/")
-	os.Mkdir(path, 0644)
-	println(path)
+func generate_file(time time.Time) *os.File {
+	year, month, day := time.Date()
+	filename := fmt.Sprintf("%d-%d-%d", year, month, day)
 
-	now := time.Now().Local()
-	year, month, day := now.Date()
-	now_file := fmt.Sprintf("%d-%d-%d", year, month, day)
-	path = strings.Join([]string{path, now_file}, "/")
+	base_folder := util.Folder_date()
+	path := strings.Join([]string{base_folder, filename}, "/")
 
-	os.Create(path)
-	file, err := os.OpenFile(path, os.O_APPEND, 0644)
-	if err != nil {
-		panic(err)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.Create(path)
 	}
+
+	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		log.Fatalln(err)
+		os.Exit(1)
+	}
+
+	return file
+}
+
+func DefaultDateWriter() {
+	now := time.Now().Local()
+	file := generate_file(now)
 	defer file.Close()
 
-	println(path)
+	_, err := file.WriteString("Hello, World!\n")
+	if err != nil {
+		log.Fatalln(err)
+		os.Exit(1)
+	}
 }
