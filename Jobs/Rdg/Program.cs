@@ -1,4 +1,4 @@
-﻿// https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/xmldoc/recommended-tags
+﻿// https://learn.microsoft.com/ko-kr/dotnet/csharp/language-reference/xmldoc/recommended-tags
 
 using System.Data;
 
@@ -16,9 +16,18 @@ namespace Rdg
       var df = new DataTable();
       for (UInt128 i = 0; i < col; i++)
       {
-        df.Columns.Add("Column" + i);
+        df.Columns.Add(i.ToString());
       }
-      Console.WriteLine(df);
+      for (UInt128 i = 0; i < row; i++)
+      {
+        df.Rows.Add(df.NewRow());
+      }
+
+      foreach (DataRow row_ in df.Rows)
+      {
+        Console.WriteLine(row_[0]);
+      }
+
       var q = from line in df.AsEnumerable()
               where line["Column1"].ToString() == "1"
               select line;
