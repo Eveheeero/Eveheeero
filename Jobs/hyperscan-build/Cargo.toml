@@ -1,0 +1,14 @@
+[package]
+name = "hyperscan-build"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# hyperscan = {version = "0.3.2", features = ["static"]}
+
+[build-dependencies]
+cmake = "0.1.49"
+reqwest = {version = "0.11.14", features = ["blocking"]}
+git2 = "0.16.1"
+tar = "0.4.38"
+zip = "0.6.4"
