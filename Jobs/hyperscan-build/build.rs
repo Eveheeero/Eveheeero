@@ -1,57 +1,88 @@
-use std::{io::Write, path::PathBuf};
+use std::path::PathBuf;
+
+use git2::{build::CheckoutBuilder, Repository};
+use once_cell::sync::Lazy;
+
+static BASEDIR: Lazy<PathBuf> = Lazy::new(|| {
+    std::env::var("OUT_DIR")
+        .expect("Not In Build!")
+        .parse::<PathBuf>()
+        .unwrap()
+});
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let target_dir = std::env::var("OUT_DIR")?.parse::<PathBuf>()?;
-
-    download_hyperscan(&target_dir, None);
-
+    download_hyperscan(None);
+    download_github("boost", "boostorg", "boost", "boost-1.81.0")?;
     Ok(())
 }
 
 // fn download_boost(basedir: &PathBuf, version: Option<String>) -> PathBuf {}
 
-fn download_hyperscan(basedir: &PathBuf, version: Option<String>) -> PathBuf {
-    let mut hyperscan_path = basedir.join("hyperscan");
-
-    match download_hyperscan_zip(basedir, &version) {
+fn download_hyperscan(version: Option<String>) -> PathBuf {
+    match download_github_zip("hyperscan", "intel", "hyperscan", &version) {
         Ok(obj) => return obj,
-        Err(_) => {}
+        Err(e) => {
+            eprintln!("Error: {}", e);
+        }
     }
 
-    hyperscan_path
+    todo!("download_hyperscan_git")
 }
 
-fn download_hyperscan_zip(
-    basedir: &PathBuf,
-    version: &Option<String>,
+fn download_github_zip(
+    target_name: &str,
+    user: &str,
+    repository: &str,
+    tag: &Option<String>,
 ) -> Result<PathBuf, Box<dyn std::error::Error>> {
-    /* 압축파일 다운로드 및 저장 */
-    {
-        let archived;
-        if let Some(version) = version {
-            archived = reqwest::blocking::Client::default()
-                .get(format!(
-                    "https://api.github.com/repos/intel/hyperscan/tarball/{version}"
-                ))
-                .header("User-Agent", "hyperscan")
-                .send()?
-                .bytes()?;
-        } else {
-            archived = reqwest::blocking::Client::default()
-                .get("https://api.github.com/repos/intel/hyperscan/tarball/")
-                .header("User-Agent", "hyperscan")
-                .send()?
-                .bytes()?;
-        }
-        let mut writer = std::fs::File::create(basedir.join("hyperscan.tar.gz"))?;
-        writer.write_all(&archived)?;
+    // 링크 생성
+    let mut url = format!(
+        "https://api.github.com/repos/{user}/{repository}/tarball",
+        user = user,
+        repository = repository
+    );
+    if let Some(tag) = tag {
+        url = format!("{url}/{tag}", url = url, tag = tag);
     }
 
-    /* 압축해제 */
-    {
-        let mut archive = tar::Archive::new(std::fs::File::open(basedir.join("hyperscan.tar.gz"))?);
-        archive.unpack(basedir.join("hyperscan"))?;
-    }
+    // 다운로드
+    let archived = reqwest::blocking::Client::default()
+        .get(url)
+        .header("User-Agent", "hyperscan")
+        .send()?
+        .bytes()?;
 
-    return Ok(basedir.join("hyperscan"));
+    // 압축 해제
+    let archived = flate2::read::GzDecoder::new(&archived[..]);
+    let mut archive = tar::Archive::new(archived);
+    archive.unpack(BASEDIR.join(target_name))?;
+
+    // 이름 변경
+    std::fs::rename(
+        std::fs::read_dir(BASEDIR.join(target_name))?
+            .next()
+            .unwrap()?
+            .path(),
+        BASEDIR.join("temp"),
+    )?;
+    std::fs::rename(BASEDIR.join("temp"), BASEDIR.join(target_name))?;
+
+    Ok(BASEDIR.join(target_name))
+}
+
+fn download_github(
+    target_name: &str,
+    user: &str,
+    repository: &str,
+    tag: &str,
+) -> Result<PathBuf, Box<dyn std::error::Error>> {
+    let url = format!("https://github.com/{user}/{repository}.git");
+    let mut checkout = CheckoutBuilder::new();
+    checkout.their_label(tag);
+    checkout.force();
+
+    Repository::clone_recurse(&url, BASEDIR.join(target_name))?
+        .checkout_head(Some(&mut checkout))?;
+
+    Ok(BASEDIR.join(target_name))
 }
