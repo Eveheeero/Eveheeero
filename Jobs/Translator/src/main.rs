@@ -134,23 +134,21 @@ async fn translate_buf(
     text: String,
     input_lang: String,
     output_lang: String,
-) {
+) -> Result<(), std::io::Error> {
     let result = translate_one_line(text, input_lang, output_lang).await;
     match result {
         Ok(result) => {
-            print_one_line(&output_file, &format!("{}", result)).unwrap();
+            print_one_line(&output_file, &format!("{}", result))?;
         }
         Err(e) => {
-            print_one_line(&output_file, &format!("{}", e)).unwrap();
+            print_one_line(&output_file, &format!("{}", e))?;
         }
     }
+    Ok(())
 }
 
 /// 한 라인을 출력한다.
-fn print_one_line(
-    output_file: &Option<String>,
-    line: &String,
-) -> Result<(), Box<dyn std::error::Error>> {
+fn print_one_line(output_file: &Option<String>, line: &String) -> Result<(), std::io::Error> {
     match output_file {
         Some(output_file) => {
             let mut file = std::fs::OpenOptions::new()
