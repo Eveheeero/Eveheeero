@@ -4,7 +4,9 @@ use std::{path::PathBuf, process::Command};
 use utils::*;
 
 pub fn build(basedir: impl Into<PathBuf>) -> Result<(), Box<dyn std::error::Error>> {
-    let basedir: PathBuf = Into::<PathBuf>::into(basedir).canonicalize()?;
+    let basedir: PathBuf = basedir.into();
+    std::fs::create_dir_all(&basedir)?;
+    let basedir = basedir.canonicalize()?;
     let mut boost = basedir.join("boost");
     let mut hyperscan = basedir.join("hyperscan");
 
@@ -59,7 +61,6 @@ pub fn build(basedir: impl Into<PathBuf>) -> Result<(), Box<dyn std::error::Erro
                 "-DCMAKE_C_FLAGS=\"-fPIC\"",
                 "-DCMAKE_CXX_FLAGS=\"-fPIC\"",
                 "-DFAT_RUNTIME=off",
-                "-GNinja",
             ])
             .current_dir(&hyperscan.join("build"))
             .status()
