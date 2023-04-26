@@ -60,7 +60,7 @@ pub fn build(basedir: impl Into<PathBuf>) -> Result<(), Box<dyn std::error::Erro
                 "-DCMAKE_BUILD_TYPE=Release",
                 "-DCMAKE_C_FLAGS=\"-fPIC\"",
                 "-DCMAKE_CXX_FLAGS=\"-fPIC\"",
-                "-DFAT_RUNTIME=off",
+                "-DFAT_RUNTIME=on",
             ])
             .current_dir(&hyperscan.join("build"))
             .status()
