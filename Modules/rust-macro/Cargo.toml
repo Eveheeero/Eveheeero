@@ -14,7 +14,7 @@ proc-macro = true
 # 매크로 설정
 proc-macro2 = "1.0.49"
 # 러스트 코드 문맥 파싱
-syn = "1.0.107"
+syn = "2.0.15"
 # 러스트 매크로 (코드변환, define등)
 quote = "1.0.23"
 
