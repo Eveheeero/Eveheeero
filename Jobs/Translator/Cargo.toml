@@ -1,6 +1,6 @@
 [package]
 name = "google_translator"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 authors = ["Eveheeero <xhve00000@gmail.com>"]
 license = "MIT"
