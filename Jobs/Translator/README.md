@@ -50,7 +50,7 @@ async fn test_translate_multi_lines() {
 
 ## Version
 
-- ... - Enable error handling for many input values (only about to executable program, inputs are divided by 4000 char)
+- 0.2.3 - Easier Error handling (@fruit-bird), fix invalid enumerated target (@pkptzx)
 - 0.2.2 - Improved parallel processing for executable files, corrected errors for quotation marks, and enumerated target language
 - 0.2.1 - Library Available, also structures.
 - 0.2.0 - Three mod Translate
