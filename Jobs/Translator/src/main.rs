@@ -34,9 +34,6 @@ struct Args {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // 로거 설정
-    // let _ = simplelog::SimpleLogger::init(log::LevelFilter::Debug, simplelog::Config::default());
-
     // 인자 파싱
     let args = Args::parse();
     let output_file = args.output_file;

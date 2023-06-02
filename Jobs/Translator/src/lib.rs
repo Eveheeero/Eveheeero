@@ -1,5 +1,15 @@
 use log::debug;
 
+#[derive(Debug, thiserror::Error)]
+pub enum TranslateError {
+    #[error("Query Send Error")]
+    QuerySendError,
+    #[error("Response Error. Maybe Query is Too long, Max Query length is 5000. because of the padding for special characters, recommend is 3000 to 4000 characters")]
+    ResponseError,
+    #[error("Error: {0}")]
+    Other(String),
+}
+
 /// 번역 결과물
 #[derive(Default, Debug, Clone)]
 pub struct TranslateResult {
@@ -78,7 +88,7 @@ pub async fn send_google_api_query(query: String) -> Result<String, Box<dyn std:
         .split_at(21)
         .1
         .split_once(r#"",null,null,null,"generic"],["#)
-        .ok_or("Response Error. Maybe Query is Too long, Max Query length is 5000. because of the padding for special characters, recommend is 3000 to 4000 characters")?
+        .ok_or(TranslateError::ResponseError)?
         .0
         .to_owned();
     debug!("Stripped Response : {}", text);
@@ -149,7 +159,7 @@ pub async fn translate<T, Y>(
     text: Vec<String>,
     input_lang: T,
     output_lang: Y,
-) -> Result<TranslateResult, String>
+) -> Result<TranslateResult, TranslateError>
 where
     T: Into<InputLang>,
     Y: Into<OutputLang>,
@@ -166,7 +176,7 @@ where
     // 번역 후 결과물 (Json형태)
     let response = match send_google_api_query(query).await {
         Ok(response) => response,
-        Err(e) => return Err(format!("Query Send Error! : {}", e)),
+        Err(_) => return Err(TranslateError::QuerySendError),
     };
 
     let result = response_to_result(response);
@@ -178,7 +188,7 @@ pub async fn translate_one_line<T, Y>(
     text: String,
     input_lang: T,
     output_lang: Y,
-) -> Result<String, String>
+) -> Result<String, TranslateError>
 where
     T: Into<InputLang>,
     Y: Into<OutputLang>,
