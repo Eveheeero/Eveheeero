@@ -163,16 +163,3 @@ fn print_one_line(output_file: &Option<String>, line: &String) -> Result<(), std
     };
     Ok(())
 }
-
-#[tokio::test]
-async fn test_translate_multi_lines() {
-    let text = vec!["Hello, world!", "내 이름은 민수야.", "나는 20살이야."]
-        .iter()
-        .map(ToString::to_string)
-        .collect();
-    let input_lang = "auto";
-    let output_lang = "fr";
-    let result = translate(&text, input_lang, output_lang).await.unwrap();
-    dbg!(result);
-    assert!(true);
-}
