@@ -36,7 +36,7 @@ async fn test_translate_multi_lines() {
         .collect();
     let input_lang = "auto";
     let output_lang = "fr";
-    let result = translate(text, input_lang, output_lang).await.unwrap();
+    let result = translate(&text, input_lang, output_lang).await.unwrap();
     dbg!(result);
     assert!(true);
 }

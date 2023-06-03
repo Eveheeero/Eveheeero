@@ -52,7 +52,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     &output_file,
                     &format!(
                         "{}",
-                        translate_one_line(args, input_lang, output_lang).await?
+                        translate_one_line(&args, input_lang, output_lang).await?
                     ),
                 )?;
             }
@@ -65,7 +65,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     &output_file,
                     &format!(
                         "{}",
-                        translate_one_line(input, input_lang, output_lang).await?
+                        translate_one_line(&input, input_lang, output_lang).await?
                     ),
                 )?;
             }
@@ -87,17 +87,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             for line in lines {
                 count += line.len();
                 if count >= 4000 {
-                    translated.push(tokio::spawn(translate(
-                        group,
-                        input_lang.clone(),
-                        output_lang.clone(),
-                    )));
+                    let input_lang_clone = input_lang.clone();
+                    let output_lang_clone = output_lang.clone();
+                    translated.push(tokio::spawn(async move {
+                        translate(&group, input_lang_clone, output_lang_clone).await
+                    }));
                     group = Vec::new();
                     count = line.len();
                 }
                 group.push(line);
             }
-            translated.push(tokio::spawn(translate(group, input_lang, output_lang)));
+
+            translated.push(tokio::spawn(async move {
+                translate(&group, input_lang, output_lang).await
+            }));
 
             for now in translated {
                 let result = now.await??;
@@ -132,7 +135,7 @@ async fn translate_buf(
     input_lang: String,
     output_lang: String,
 ) -> Result<(), std::io::Error> {
-    let result = translate_one_line(text, input_lang, output_lang).await;
+    let result = translate_one_line(&text, input_lang, output_lang).await;
     match result {
         Ok(result) => {
             print_one_line(&output_file, &format!("{}", result))?;
@@ -159,4 +162,17 @@ fn print_one_line(output_file: &Option<String>, line: &String) -> Result<(), std
         None => println!("{}", line),
     };
     Ok(())
+}
+
+#[tokio::test]
+async fn test_translate_multi_lines() {
+    let text = vec!["Hello, world!", "내 이름은 민수야.", "나는 20살이야."]
+        .iter()
+        .map(ToString::to_string)
+        .collect();
+    let input_lang = "auto";
+    let output_lang = "fr";
+    let result = translate(&text, input_lang, output_lang).await.unwrap();
+    dbg!(result);
+    assert!(true);
 }
