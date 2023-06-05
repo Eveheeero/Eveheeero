@@ -156,7 +156,7 @@ pub fn response_to_result(response: String) -> TranslateResult {
 //////////////////////////////////////////////////////////////////////////// */
 
 pub async fn translate<T, Y>(
-    text: Vec<String>,
+    text: &[String],
     input_lang: T,
     output_lang: Y,
 ) -> Result<TranslateResult, TranslateError>
@@ -185,7 +185,7 @@ where
 }
 
 pub async fn translate_one_line<T, Y>(
-    text: String,
+    text: &str,
     input_lang: T,
     output_lang: Y,
 ) -> Result<String, TranslateError>
@@ -193,9 +193,9 @@ where
     T: Into<InputLang>,
     Y: Into<OutputLang>,
 {
-    let text = vec![text];
+    let text = vec![text.to_string()];
 
-    let result = translate(text, input_lang, output_lang).await?;
+    let result = translate(&text, input_lang, output_lang).await?;
 
     Ok(result.output_text[0][0].clone())
 }
@@ -210,7 +210,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_translate_one_line() {
-        let text = "Hello, world!".to_string();
+        let text = "Hello, world!";
         let input_lang = "en";
         let output_lang = "ko";
         let result = translate_one_line(text, input_lang, output_lang)
@@ -225,10 +225,10 @@ mod tests {
         let text = vec!["Hello, world!", "내 이름은 민수야.", "나는 20살이야."]
             .iter()
             .map(|x| x.to_string())
-            .collect();
+            .collect::<Vec<_>>();
         let input_lang = "auto";
         let output_lang = "fr";
-        let result = translate(text, input_lang, output_lang).await.unwrap();
+        let result = translate(&text, input_lang, output_lang).await.unwrap();
         dbg!(result);
         assert!(true);
     }
