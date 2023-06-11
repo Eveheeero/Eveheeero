@@ -213,20 +213,20 @@ class HumanName
   {
     HttpClient client = new();
     UrlEncoder? encoder = UrlEncoder.Default;
-    var query = """
-    {0}
-      "@MultiCandType": {0} "value": ["DT"], "type": "STRING", "defaultValue": "" {1},
-      "@MultiCandStDt": {0}
-        "value": ["{2}"],
+    var query = $$"""
+    {
+      "@MultiCandType": { "value": ["DT"], "type": "STRING", "defaultValue": "" },
+      "@MultiCandStDt": {
+        "value": ["{{from}}"],
           "type": "STRING",
           "defaultValue": ""
-      {1},
-      "@MultiCandEdDt": {0}
-        "value": ["{3}"],
+      },
+      "@MultiCandEdDt": {
+        "value": ["{{to}}"],
           "type": "STRING",
           "defaultValue": ""
-      {1},
-      "@SidoCd": {0}
+      },
+      "@SidoCd": {
         "value": [
               "11",
               "26",
@@ -255,30 +255,32 @@ class HumanName
           "type": "STRING",
           "defaultValue": "[All]",
           "whereClause": "C.SIDO_CD"
-      {1},
-      "@CggCd": {0}
+      },
+      "@CggCd": {
         "value": ["_EMPTY_VALUE_"],
           "type": "STRING",
           "defaultValue": "[All]",
           "whereClause": "D.CGG_CD"
-      {1},
-      "@UmdCd": {0}
+      },
+      "@UmdCd": {
         "value": ["_EMPTY_VALUE_"],
           "type": "STRING",
           "defaultValue": "[All]",
           "whereClause": "E.UMD_CD"
-      {1},
-      "@GenderCd": {0}
+      },
+      "@GenderCd": {
         "value": ["_EMPTY_VALUE_"],
           "type": "STRING",
           "defaultValue": "[All]",
           "whereClause": "F.GENDER_CD"
-      {1}
-    {1}
+      }
+    }
     """;
-    var jsonQuery = encoder.Encode(String.Format(query, '{', '}', from, to));
-    Console.WriteLine(String.Format(query, '{', '}', from, to));
-    var response = await client.PostAsync("https://efamily.scourt.go.kr/ds/report/query.do", new StringContent($"pid=1811&uid=999999&dsid=1261&dstype=DS&mapid=dcea0891-75fa-4cbd-b40f-72986a16abf6&sqlid=1811-1&params={jsonQuery}"));
+    var jsonQuery = encoder.Encode(query.Replace(" ", "").Replace("\n", ""));
+    jsonQuery = jsonQuery.Replace("@", "%40").Replace(",", "%2C");
+    Console.WriteLine(jsonQuery);
+    // var response = await client.PostAsync("https://efamily.scourt.go.kr/ds/report/query.do", new StringContent($"pid=1811&uid=999999&dsid=1261&dstype=DS&mapid=dcea0891-75fa-4cbd-b40f-72986a16abf6&sqlid=1811-1&params={jsonQuery}"));
+    var response = await client.GetAsync($"https://efamily.scourt.go.kr/ds/report/query.do?pid=1811&uid=999999&dsid=1261&dstype=DS&mapid=dcea0891-75fa-4cbd-b40f-72986a16abf6&sqlid=1811-1&params={jsonQuery}");
     var responseJson = await response.Content.ReadAsStringAsync();
     return responseJson;
   }
