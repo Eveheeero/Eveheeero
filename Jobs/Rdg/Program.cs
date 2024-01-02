@@ -4,7 +4,7 @@ using System.Data;
 
 namespace Rdg
 {
-  class Program
+  static internal class Program
   {
     static void Main()
     {

@@ -1,6 +1,6 @@
 namespace Rng.Core.Generator;
 
-class RegionName
+static class RegionName
 {
   private static readonly Lazy<List<string>> regionNameOfKorea = new(() =>
   {
@@ -13444,4 +13444,9 @@ class RegionName
     """;
     return data.Split('\n').ToList();
   });
+  public static string GetRandomRegionName()
+  {
+    Random random = new();
+    return regionNameOfKorea.Value[random.Next(regionNameOfKorea.Value.Count)];
+  }
 }
