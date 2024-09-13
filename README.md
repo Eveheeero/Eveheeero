@@ -15,7 +15,7 @@ I'm @Eveheeero
 - [LargeTextReader 2023-11](https://github.com/Eveheeero/LargeTextReader)
 - OpenAiApiChat 2024-03
 - AgitCrawler 2024-03
-- [epub_toc_inspector](https://github.com/Eveheeero/epub_toc_inspector)
+- [epub_toc_inspector 2024-09](https://github.com/Eveheeero/epub_toc_inspector)
 
 ### Planning
 
