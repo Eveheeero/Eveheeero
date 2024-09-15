@@ -11,7 +11,7 @@ I'm @Eveheeero
 ### Done
 
 - Hyperscan Autobuild
-- SimpleIdMemo 2023-11
+- [SimpleIdMemo 2023-11](https://github.com/Eveheeero/SimpleIdMemo)
 - [LargeTextReader 2023-11](https://github.com/Eveheeero/LargeTextReader)
 - [OpenAIApiChat 2024-03](https://github.com/Eveheeero/OpenAIApiChat)
 - AgitCrawler 2024-03
