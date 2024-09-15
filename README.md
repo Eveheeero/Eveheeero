@@ -7,6 +7,7 @@ I'm @Eveheeero
 - [fireman](https://github.com/Eveheeero/fireman)
   - [architecture_doc_extractor](https://github.com/Eveheeero/architecture_doc_extractor)
 - [nickname_generator](https://github.com/Eveheeero/nickname_generator)
+- [OpenAIApiAssistants](https://github.com/Eveheeero/OpenAIApiAssistants)
 
 ### Done
 
