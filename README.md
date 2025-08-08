@@ -15,7 +15,6 @@ I'm @Eveheeero
 - [SimpleIdMemo 2023-11](https://github.com/Eveheeero/SimpleIdMemo)
 - [LargeTextReader 2023-11](https://github.com/Eveheeero/LargeTextReader)
 - [OpenAIApiChat 2024-03](https://github.com/Eveheeero/OpenAIApiChat)
-- AgitCrawler 2024-03
 - [epub_toc_inspector 2024-09](https://github.com/Eveheeero/epub_toc_inspector)
 
 ### Planning
